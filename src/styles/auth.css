@@ -126,6 +126,32 @@
     font-weight: 700;
   }
 
+.form-status-good {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: #0b6b3a;            /* 5.7:1 on its pale green */
+  background: #d7f5e4;
+  font-weight: 700;
+}
+
+/* The 6-digit code: big, spaced digits, as wide as the code (still reflows at 400% zoom) */
+.code-input {
+  max-width: 12ch;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2em;
+}
+
+/* Links and buttons that go with a form (send a new code, enter your code) */
+.form-more {
+  margin: 1.5rem 0 0;
+}
+
+  .form-more p {
+    margin: 0 0 0.75rem;
+  }
+
 .form-aside {
   margin: -0.5rem 0 0;
 }

@@ -1,8 +1,8 @@
 import { apiFetch } from './http'
 
 /**
- * The account endpoints of msanga-api (/api/auth), exactly as the API has them. W2 uses sign in, refresh and sign
- * out; create account, the codes and the profile come in W3–W5.
+ * The account endpoints of msanga-api (/api/auth), exactly as the API has them: create account and the 6-digit code
+ * (W3), sign in, refresh, sign out (W2). Forgot / reset password and the profile come in W4–W5.
  */
 
 /** The signed-in member (the API's MemberDto). No popularity counts, by design. */
@@ -33,7 +33,32 @@ export interface AuthTokens {
   member: Member
 }
 
+/** What the Create account form sends. */
+export interface NewAccount {
+  firstName: string
+  lastName: string
+  /** Surname at school, if different now; "" = none. */
+  schoolSurname: string
+  email: string
+  password: string
+}
+
 export const authApi = {
+  /**
+   * Always 204, even when the email already has an account (its owner gets an email instead), so nobody can use
+   * it to find out who is on Msanga. 400 with field errors; 429 too many tries.
+   */
+  register: (account: NewAccount) =>
+    apiFetch<void>('api/auth/register', { method: 'POST', body: account }),
+
+  /** 204; or 400 Auth.InvalidCode (wrong, expired, used, or 5 wrong tries: the same answer for an unknown email). */
+  confirmEmail: (email: string, code: string) =>
+    apiFetch<void>('api/auth/confirm-email', { method: 'POST', body: { email, code } }),
+
+  /** Always 204 (a new code goes out only if the email has an account waiting to be confirmed). */
+  resendConfirmation: (email: string) =>
+    apiFetch<void>('api/auth/resend-confirmation', { method: 'POST', body: { email } }),
+
   /** 401 Auth.InvalidCredentials, 403 Auth.EmailNotConfirmed or Auth.LockedOut, 429 too many tries. */
   login: (email: string, password: string) =>
     apiFetch<AuthTokens>('api/auth/login', { method: 'POST', body: { email, password } }),

@@ -17,14 +17,28 @@ const ada: Member = {
 }
 
 /**
- * A pretend msanga-api for the tests (replaces the browser's fetch): sign in, refresh (rotating: a refresh token
- * works once, like the real API), sign out, /api/me and /api/hello. `calls` records every request.
+ * A pretend msanga-api for the tests (replaces the browser's fetch): create account with a 6-digit code (one
+ * InvalidCode answer for everything wrong, 5 tries per code), sign in, refresh (rotating: a refresh token works once,
+ * like the real API), sign out, /api/me and /api/hello. `calls` records every request; `sentCodes` the "emails".
  */
 export function installFakeApi() {
   let n = 0
   const refreshTokens = new Map<string, 'active' | 'used'>()
   const accessTokens = new Set<string>()
   const calls: string[] = []
+  /** Accounts created in the test: email → password, first name, confirmed or not. */
+  const accounts = new Map<string, { password: string; firstName: string; confirmed: boolean }>()
+  /** The codes "emailed": email → the newest code and wrong tries so far. */
+  const codes = new Map<string, { code: string; wrongTries: number }>()
+  /** Every code "emailed", oldest first (the tests read them like an inbox). */
+  const sentCodes: { email: string; code: string }[] = []
+  let codeNumber = 482912
+  const sendCode = (email: string) => {
+    codeNumber += 1
+    codes.set(email, { code: String(codeNumber), wrongTries: 0 })
+    sentCodes.push({ email, code: String(codeNumber) })
+  }
+  const invalidCode = () => problem(400, 'Auth.InvalidCode', "That code isn't right or has expired. Check it, or ask for a new code.")
 
   const problem = (status: number, code: string, detail: string) => Response.json({ status, code, detail }, { status })
 
@@ -52,10 +66,49 @@ export function installFakeApi() {
     calls.push(`${method} ${path}`)
 
     switch (`${method} ${path}`) {
-      case 'POST /api/auth/login':
-        return body.email.toLowerCase() === ADA.email && body.password === ADA.password
+      case 'POST /api/auth/register': {
+        const email = String(body.email).toLowerCase()
+        if (String(body.password).length < 10) {
+          return Response.json({ status: 400, title: 'Validation failed', errors: { Password: ['Passwords must be at least 10 characters.'] } }, { status: 400 })
+        }
+        const existing = accounts.get(email)
+        if (!existing && email !== ADA.email) {
+          accounts.set(email, { password: body.password, firstName: body.firstName, confirmed: false })
+          sendCode(email)
+        } else if (existing && !existing.confirmed) {
+          sendCode(email)
+        }
+        return new Response(null, { status: 204 })
+      }
+      case 'POST /api/auth/confirm-email': {
+        const email = String(body.email).toLowerCase()
+        const account = accounts.get(email)
+        const current = codes.get(email)
+        if (!account || account.confirmed || !current || current.wrongTries >= 5) return invalidCode()
+        if (String(body.code).replace(/[ -]/g, '') !== current.code) {
+          current.wrongTries += 1
+          return invalidCode()
+        }
+        account.confirmed = true
+        codes.delete(email)
+        return new Response(null, { status: 204 })
+      }
+      case 'POST /api/auth/resend-confirmation': {
+        const email = String(body.email).toLowerCase()
+        if (accounts.get(email)?.confirmed === false) sendCode(email)
+        return new Response(null, { status: 204 })
+      }
+      case 'POST /api/auth/login': {
+        const email = String(body.email).toLowerCase()
+        const account = accounts.get(email)
+        if (account && account.password === body.password) {
+          if (!account.confirmed) return problem(403, 'Auth.EmailNotConfirmed', 'Please confirm your email first: enter the code we sent you.')
+          return Response.json({ ...issue(), member: { ...ada, email, firstName: account.firstName, displayName: `${account.firstName} N.` } })
+        }
+        return email === ADA.email && body.password === ADA.password
           ? Response.json(issue())
           : problem(401, 'Auth.InvalidCredentials', 'The email or password is not right. Check them and try again.')
+      }
       case 'POST /api/auth/refresh':
         if (refreshTokens.get(body.refreshToken) !== 'active') {
           return problem(401, 'Auth.InvalidToken', 'Your session has ended. Please sign in again.')
@@ -78,6 +131,7 @@ export function installFakeApi() {
 
   return {
     calls,
+    sentCodes,
     issue,
     /** Every access token stops working (as if 15 minutes had passed). */
     expireAccessTokens: () => accessTokens.clear(),

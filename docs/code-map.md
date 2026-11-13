@@ -2,7 +2,22 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: W2 signing in with the real API (13 Nov 2026)_
+_Last updated: W3 create account and the 6-digit code (13 Nov 2026)_
+
+## W3: create account and the 6-digit code (13 Nov 2026)
+
+Create account → "Check your email" (type the 6-digit code; send a new code) → Sign in says "Your email is
+confirmed" with the email filled in → Home. Signing in before confirming offers "Enter the code from your email".
+
+| File | What it does |
+|---|---|
+| `src/api/auth.ts` | + `register`, `confirmEmail`, `resendConfirmation` (all privacy-safe: the API's answers never say who has an account) |
+| `src/pages/auth/RegisterPage.tsx` | names, surname at school (optional), email, password (at least 10 characters) |
+| `src/pages/auth/CheckEmailPage.tsx` | the code box (`inputmode="numeric"`, `autocomplete="one-time-code"`, spaces allowed: "482 913"), Send a new code, the API's one "isn't right or has expired" message on the code field |
+| `src/pages/auth/SignInPage.tsx` | "Your email is confirmed" + email filled in; "Enter the code from your email" when not confirmed yet |
+| `src/components/forms/useFormProblems.ts`, `formHelpers.ts` | a form's problems after a submit (shared by the three pages); `codeProblem` / `codeDigits` |
+| `src/styles/auth.css` | the code box (big, spaced digits), the green "confirmed" line, `form-more` |
+| `src/test/fakeApi.ts` | + accounts, codes (5 wrong tries), resend; `pages/auth/RegisterPage.test.tsx` |
 
 ## W2: signing in with the real API (13 Nov 2026)
 
@@ -99,5 +114,5 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 
 ## Coming next
 
-- **W3:** create account + "check your email" with the 6-digit code (and "send a new code").
+- **Open question:** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account?
 - **W4:** forgot / reset password with a code. **W5:** profile, edit profile, the account menu in the top bar.

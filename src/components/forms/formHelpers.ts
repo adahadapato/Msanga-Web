@@ -29,3 +29,14 @@ export function problemsFromApi(error: unknown): { problems: FieldProblem[]; mes
   }
   return { problems: [], message: 'Something went wrong. Please try again.' }
 }
+
+/** "482 913", "482-913" → "482913". */
+export const codeDigits = (typed: string) => typed.replace(/[\s-]/g, '')
+
+/** Checks a typed 6-digit code; the message to show, or undefined when it looks right. */
+export function codeProblem(typed: string): string | undefined {
+  const digits = codeDigits(typed)
+  if (!digits) return 'Enter the 6-digit code from the email'
+  if (!/^\d{6}$/.test(digits)) return 'The code is 6 digits, like 482 913'
+  return undefined
+}

@@ -16,6 +16,5 @@ export const COMING_SOON: { path: string; title: string; when: string }[] = [
 
 /** Account pages still to build (shown to signed-out visitors, in the account-page frame). */
 export const COMING_SOON_SIGNED_OUT: { path: string; title: string; when: string }[] = [
-  { path: '/register', title: 'Create an account', when: 'very soon (W3)' },
   { path: '/forgot-password', title: 'Reset your password', when: 'very soon (W4)' },
 ]
