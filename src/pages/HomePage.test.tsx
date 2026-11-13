@@ -4,15 +4,16 @@ import { accessibilityProblems } from '../test/axe'
 import { renderApp } from '../test/renderApp'
 
 /** The mock-up's promises: one h1, clear link names, the current page marked, no personal counts. */
-describe('Home (mock-up)', () => {
-  beforeEach(() => {
-    renderApp('/')
+describe('Home (signed in as Ada; sets, reunions and memories made up)', () => {
+  beforeEach(async () => {
+    renderApp('/', { signedIn: true })
+    await screen.findByRole('heading', { level: 1, name: 'Welcome back, Ada!' })
   })
 
   it('has exactly one h1: the welcome, by name, and no accessibility problems', async () => {
     const h1s = screen.getAllByRole('heading', { level: 1 })
     expect(h1s).toHaveLength(1)
-    expect(h1s[0].textContent).toBe('Welcome back, Hilary!')
+    expect(h1s[0].textContent).toBe('Welcome back, Ada!')
     expect(document.title).toBe('Home – Msanga')
     expect(await accessibilityProblems()).toEqual([])
   })
@@ -46,7 +47,7 @@ describe('Home (mock-up)', () => {
   })
 
   it('shows no follower or connection counts on the profile card (Msanga promise)', () => {
-    const card = screen.getByRole('heading', { name: 'Hilary A.' }).closest('section')!
+    const card = screen.getByRole('heading', { name: 'Ada O.' }).closest('section')!
     expect(card.textContent).not.toMatch(/connections|followers/i)
   })
 

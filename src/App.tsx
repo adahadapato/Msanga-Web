@@ -1,34 +1,53 @@
 import { Outlet, Route, Routes } from 'react-router'
+import { useSessionEndedHandler } from './auth/useSession'
+import { AuthLayout } from './components/auth/AuthLayout'
+import { RedirectIfMember, RequireMember } from './components/auth/RouteGuards'
 import { AppLayout } from './components/layout/AppLayout'
 import { useFocusOnNavigate } from './components/layout/page'
-import { COMING_SOON } from './pages/comingSoon'
+import { SignInPage } from './pages/auth/SignInPage'
+import { COMING_SOON, COMING_SOON_SIGNED_OUT } from './pages/comingSoon'
 import { HomePage } from './pages/HomePage'
 import { ComingSoonPage, NotFoundPage, SettingsPage } from './pages/OtherPages'
 
 /**
- * Every page in one place (React Router). W1: the app frame with Home, Settings and a "coming soon" page for every
- * menu place that isn't built yet. Sign-in and the account pages come in W2–W6; until then Home shows the mock-up's
- * made-up member (src/mock/homeData.ts).
+ * Every page in one place (React Router).
+ * - Signed out: Sign in (and "coming soon" for Create account and Forgot password, W3–W4), in the account frame.
+ * - Signed in: the app frame with Home, Settings and a "coming soon" page for every menu place not built yet.
+ * Signed out and asking for a signed-in page: Sign in, then back to that page.
  */
 export default function App() {
   return (
     <Routes>
       <Route element={<Root />}>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          {COMING_SOON.map(({ path, title, when }) => (
-            <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} />} />
-          ))}
+        <Route element={<RedirectIfMember />}>
+          <Route element={<AuthLayout />}>
+            <Route path="/sign-in" element={<SignInPage />} />
+            {COMING_SOON_SIGNED_OUT.map(({ path, title, when }) => (
+              <Route key={path} path={path}
+                     element={<ComingSoonPage title={title} when={when} back={{ to: '/sign-in', label: 'Back to sign in' }} />} />
+            ))}
+          </Route>
         </Route>
+
+        <Route element={<RequireMember />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            {COMING_SOON.map(({ path, title, when }) => (
+              <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} />} />
+            ))}
+          </Route>
+        </Route>
+
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )
 }
 
-/** Wraps every page: after moving to another page, the focus goes to its h1. */
+/** Wraps every page: after moving to another page, the focus goes to its h1; a session that ends shows Sign in. */
 function Root() {
   useFocusOnNavigate()
+  useSessionEndedHandler()
   return <Outlet />
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { Bell, ChevronDown, MessageCircle, Search } from 'lucide-react'
 import { useId } from 'react'
-import type { MockMember } from '../../mock/homeData'
+import type { Member } from '../../api/auth'
 import { Avatar } from '../ui/Avatar'
 import { Logo } from '../ui/Logo'
 
@@ -10,7 +10,7 @@ import { Logo } from '../ui/Logo'
  * messages and your account. On phones only the logo and notifications stay.
  */
 export function TopBar({ member, newNotifications, unreadMessages }: {
-  member: MockMember
+  member: Member
   newNotifications: number
   unreadMessages: number
 }) {

@@ -156,6 +156,19 @@ code {
     color: #ffffff;
   }
 
+/* Full width, a little taller: the main button of a form */
+.button-wide {
+  width: 100%;
+  min-height: 3.25rem;
+  font-size: 1.05rem;
+}
+
+/* Waiting for an answer: looks paused, still focusable and announced (aria-disabled, never "disabled") */
+.button[aria-disabled='true'] {
+  opacity: 0.75;
+  cursor: progress;
+}
+
 /* Shown on wide screens only (above 40rem): e.g. the fifth quick action, your card beside Home */
 @media (max-width: 40rem) {
   .wide-only {

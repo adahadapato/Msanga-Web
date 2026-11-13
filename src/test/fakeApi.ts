@@ -1,0 +1,87 @@
+import { vi } from 'vitest'
+import type { AuthTokens, Member } from '../api/auth'
+
+/** The one account the pretend API knows (like Ada, made in Swagger). */
+export const ADA = { email: 'ada@example.com', password: 'my old school bell' }
+
+const ada: Member = {
+  id: '0193a000-0000-7000-8000-000000000001',
+  email: ADA.email,
+  firstName: 'Ada',
+  lastName: 'Okon',
+  schoolSurname: null,
+  displayName: 'Ada O.',
+  mainSet: null,
+  bio: '',
+  photo: null,
+}
+
+/**
+ * A pretend msanga-api for the tests (replaces the browser's fetch): sign in, refresh (rotating: a refresh token
+ * works once, like the real API), sign out, /api/me and /api/hello. `calls` records every request.
+ */
+export function installFakeApi() {
+  let n = 0
+  const refreshTokens = new Map<string, 'active' | 'used'>()
+  const accessTokens = new Set<string>()
+  const calls: string[] = []
+
+  const problem = (status: number, code: string, detail: string) => Response.json({ status, code, detail }, { status })
+
+  /** A new session, as the API's login / refresh answer it. */
+  function issue(): AuthTokens {
+    n += 1
+    const accessToken = `access-${n}`
+    const refreshToken = `refresh-${n}`
+    accessTokens.add(accessToken)
+    refreshTokens.set(refreshToken, 'active')
+    return {
+      accessToken,
+      accessTokenExpiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
+      refreshToken,
+      refreshTokenExpiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
+      member: ada,
+    }
+  }
+
+  vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+    const method = init?.method ?? 'GET'
+    const path = new URL(url).pathname
+    const body = init?.body ? JSON.parse(String(init.body)) : undefined
+    const bearer = (init?.headers as Record<string, string> | undefined)?.Authorization?.replace('Bearer ', '')
+    calls.push(`${method} ${path}`)
+
+    switch (`${method} ${path}`) {
+      case 'POST /api/auth/login':
+        return body.email.toLowerCase() === ADA.email && body.password === ADA.password
+          ? Response.json(issue())
+          : problem(401, 'Auth.InvalidCredentials', 'The email or password is not right. Check them and try again.')
+      case 'POST /api/auth/refresh':
+        if (refreshTokens.get(body.refreshToken) !== 'active') {
+          return problem(401, 'Auth.InvalidToken', 'Your session has ended. Please sign in again.')
+        }
+        refreshTokens.set(body.refreshToken, 'used')
+        return Response.json(issue())
+      case 'POST /api/auth/logout':
+        refreshTokens.set(body.refreshToken, 'used')
+        return new Response(null, { status: 204 })
+      case 'GET /api/me':
+        return bearer && accessTokens.has(bearer)
+          ? Response.json(ada)
+          : problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
+      case 'GET /api/hello':
+        return Response.json({ title: 'Mme nsanga!', message: 'Your set is waiting.', serverTime: '2026-11-13T22:00:00Z' })
+      default:
+        return problem(404, 'Http.404', 'Not found.')
+    }
+  }))
+
+  return {
+    calls,
+    issue,
+    /** Every access token stops working (as if 15 minutes had passed). */
+    expireAccessTokens: () => accessTokens.clear(),
+    /** Every refresh token stops working (as if the session had ended on the server). */
+    endAllSessions: () => refreshTokens.forEach((_, token) => refreshTokens.set(token, 'used')),
+  }
+}

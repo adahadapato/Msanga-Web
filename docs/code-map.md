@@ -2,7 +2,31 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: W1 frame, logo and Home fixes (13 Nov 2026)_
+_Last updated: W2 signing in with the real API (13 Nov 2026)_
+
+## W2: signing in with the real API (13 Nov 2026)
+
+Sign in against msanga-api, stay signed in, sign out. Home greets the signed-in member; sets, reunions and memories
+are still made up. Create account, the codes, the password pages and the profile come in W3–W5.
+
+**Keeping the session (decided 13 Nov 2026):** the access token (15 minutes) lives only in the page's memory; the
+refresh token (30 days) in this browser's storage (`msanga.refreshToken`), so members stay signed in between
+visits. The API rotates refresh tokens and ends every session if one is used twice, so only one refresh runs at a
+time: within the page (one shared promise) and across tabs (the browser's Web Locks).
+
+| File | What it does |
+|---|---|
+| `src/api/http.ts` | `apiFetch`: the API's address, JSON, and error answers turned into an `ApiError` (status, the API's `code`, a plain-English message, per-field messages keyed like the form ids) |
+| `src/api/auth.ts` | the account endpoints and their shapes (`Member`, `AuthTokens`): login, refresh, logout |
+| `src/auth/session.ts` | the session keeper (no React): `signIn`, `refreshSession` (one at a time), `signOut`, `authorizedFetch` (refreshes early, and once more after a 401; then the session has ended), `onSignedOut` |
+| `src/auth/useSession.ts`, `memberContext.ts` | React side (TanStack Query): `useMe` (on page load, a returning visitor is signed in from the stored token), `useSignIn`, `useSignOut`, `useMember`, and showing Sign in when the session ends |
+| `src/components/auth/RouteGuards.tsx` | `RequireMember` (signed out → Sign in, then back; "Can't reach Msanga" with Try again), `RedirectIfMember` |
+| `src/components/auth/AuthLayout.tsx` | the account-page frame: navy brand panel (wide) or logo strip (phones) + the form |
+| `src/components/forms/*` | labelled fields with hints and errors tied to them, password Show / Hide, "There is a problem" summary that takes the focus; `problemsFromApi` |
+| `src/pages/auth/SignInPage.tsx` | Sign in; "Forgot your password?" and "Create an account" are "coming soon" (W3–W4) |
+| `src/pages/OtherPages.tsx` | Settings now shows who you're signed in as, and Sign out |
+| `src/styles/auth.css` | the forms and the account-page frame |
+| `src/test/fakeApi.ts` | a pretend msanga-api for the tests (rotating refresh tokens, like the real one); `auth/session.test.ts`, `pages/auth/SignInPage.test.tsx` |
 
 ## W1: frame, logo and Home fixes (13 Nov 2026)
 
@@ -75,5 +99,5 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 
 ## Coming next
 
-- **W2:** talking to the API (`src/api/auth.ts`: register, codes, sign in, tokens kept and refreshed).
-- **W3–W6:** create account + 6-digit code, sign in / out, forgot / reset password with a code, profile.
+- **W3:** create account + "check your email" with the 6-digit code (and "send a new code").
+- **W4:** forgot / reset password with a code. **W5:** profile, edit profile, the account menu in the top bar.

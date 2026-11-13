@@ -31,3 +31,11 @@
   margin: 4rem auto;
   padding: 0 1.5rem;
 }
+
+/* "Loading Msanga…" and "Can't reach Msanga" while the session is checked */
+.page-loading {
+  max-width: 32rem;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}

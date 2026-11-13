@@ -27,3 +27,8 @@ export function useFocusOnNavigate() {
     heading.focus()
   }, [pathname])
 }
+
+/** A same-site address to go back to after signing in, or "/" (never another site: "//evil.example"). */
+export function safeReturnPath(from: unknown): string {
+  return typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : '/'
+}

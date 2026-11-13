@@ -1,13 +1,12 @@
 import { screen, within } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { accessibilityProblems } from './test/axe'
 import { renderApp, where } from './test/renderApp'
 
-afterEach(() => vi.unstubAllGlobals())
-
 describe('Msanga app: the frame and the way between pages', () => {
-  it('starts every page with a skip link to the main content', () => {
-    renderApp('/')
+  it('starts every page with a skip link to the main content', async () => {
+    renderApp('/', { signedIn: true })
+    await screen.findByRole('heading', { level: 1, name: 'Welcome back, Ada!' })
     const first = screen.getAllByRole('link')[0]
     expect(first.textContent).toBe('Skip to the main content')
     expect(first.getAttribute('href')).toBe('#main')
@@ -15,8 +14,8 @@ describe('Msanga app: the frame and the way between pages', () => {
   })
 
   it("moves to another page without reloading, marks it current and puts the focus on its heading", async () => {
-    const { user } = renderApp('/')
-    const menu = screen.getByRole('navigation', { name: 'Main' })
+    const { user } = renderApp('/', { signedIn: true })
+    const menu = await screen.findByRole('navigation', { name: 'Main' })
     await user.click(within(menu).getByRole('link', { name: 'Memories' }))
 
     const heading = await screen.findByRole('heading', { level: 1, name: 'Memories' })
@@ -27,26 +26,25 @@ describe('Msanga app: the frame and the way between pages', () => {
   })
 
   it('says "coming soon" (and when) for places that come later, with no accessibility problems', async () => {
-    renderApp('/messages')
-    expect(screen.getByRole('heading', { level: 1, name: 'Messages' })).toBeTruthy()
+    renderApp('/messages', { signedIn: true })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Messages' })).toBeTruthy()
     expect(screen.getByText(/coming with messaging/)).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Back to Home' })).toBeTruthy()
     expect(await accessibilityProblems()).toEqual([])
   })
 
-  it('marks a menu item current on its sub-pages too (/sets/gcl-1998 → My Sets)', () => {
-    renderApp('/sets/gcl-1998')
-    const menu = screen.getByRole('navigation', { name: 'Main' })
+  it('marks a menu item current on its sub-pages too (/sets/gcl-1998 → My Sets)', async () => {
+    renderApp('/sets/gcl-1998', { signedIn: true })
+    const menu = await screen.findByRole('navigation', { name: 'Main' })
     expect(within(menu).getByRole('link', { name: 'My Sets' }).getAttribute('aria-current')).toBe('page')
     expect(within(menu).getByRole('link', { name: 'Home' }).getAttribute('aria-current')).toBeNull()
   })
 
   it('has the connection check on Settings', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => Response.json({
-      title: 'Mme nsanga!', message: 'Your set is waiting.', serverTime: '2026-11-13T21:00:00Z',
-    })))
-    renderApp('/settings')
-    expect(screen.getByRole('heading', { level: 1, name: 'Settings' })).toBeTruthy()
+    renderApp('/settings', { signedIn: true })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeTruthy()
+    const settings = screen.getByRole('heading', { level: 1, name: 'Settings' }).closest('section')!
+    expect(within(settings).getByText('Ada O.')).toBeTruthy()
     expect(await screen.findByText('Mme nsanga!')).toBeTruthy()
     expect(await accessibilityProblems()).toEqual([])
   })

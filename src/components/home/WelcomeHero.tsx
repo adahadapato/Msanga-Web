@@ -1,4 +1,4 @@
-import type { MockMember } from '../../mock/homeData'
+import type { Member } from '../../api/auth'
 import { scenes } from '../../mock/homeData'
 import { Avatar } from '../ui/Avatar'
 
@@ -8,7 +8,7 @@ import { Avatar } from '../ui/Avatar'
  * along the bottom. Phones: the phone mock-up's greeting instead: your photo, "Welcome back, Hilary!" and one line.
  * The h1 is the page's only h1; the picture, wave and photo are decoration.
  */
-export function WelcomeHero({ member }: { member: MockMember }) {
+export function WelcomeHero({ member }: { member: Member }) {
   return (
     <section className="hero" aria-labelledby="welcome-heading">
       <img className="hero-picture" src={scenes.hero} alt="" />

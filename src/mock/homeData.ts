@@ -2,8 +2,8 @@
  * MADE-UP DATA for the Home page mock-up (13 Nov 2026). Nothing here comes from the API yet.
  *
  * It shows what each part of the page needs, so the API can be built to match:
- *   member      → M1 (accounts)            sets      → M2–M3 (communities and sets)
- *   reunions    → Reunion planner          memories  → Memory Wall
+ *   sets      → M2–M3 (communities and sets)      reunions → Reunion planner      memories → Memory Wall
+ * (The member came from here until W2; now it is the signed-in member, from the API.)
  * When those exist, each list is replaced by a call to the API and this file is deleted.
  * The people, schools and events are invented; any likeness to real ones is accidental.
  *
@@ -13,15 +13,6 @@
 
 /** Where the mock-up's pictures live (public/mock-images, served from the site's root). */
 const picture = (name: string) => `/mock-images/${name}.webp`
-
-export interface MockMember {
-  firstName: string
-  displayName: string
-  /** The set shown under the name, e.g. "Class of 1998". */
-  mainSet: string
-  /** Their profile picture; null = initials. */
-  photo: string | null
-}
 
 export interface MockSet {
   id: string
@@ -52,13 +43,6 @@ export interface MockMemory {
   caption: string
   year: number
   picture: string
-}
-
-export const member: MockMember = {
-  firstName: 'Hilary',
-  displayName: 'Hilary A.',
-  mainSet: 'Class of 1998',
-  photo: picture('avatar-hilary'),
 }
 
 /** The welcome banner and the sidebar's evening scene. */

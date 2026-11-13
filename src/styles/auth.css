@@ -1,0 +1,244 @@
+/*
+  Account pages (W2: Sign in): the forms and the account-page frame.
+  Contrast (checked 13 Nov 2026): field edge #7a7499 on white 4.4 (needs 3); error #b42318 on white 6.6;
+  white and #c9cde0 on Midnight 17.4 / 11.0.
+*/
+
+/* ───────────── Forms ───────────── */
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.25rem;
+}
+
+.field-label {
+  font-weight: 700;
+}
+
+.field-optional {
+  color: var(--m-muted);
+  font-weight: 500;
+}
+
+.field-hint {
+  margin: 0;
+  color: var(--m-muted);
+  font-size: 0.95rem;
+}
+
+.field-error {
+  margin: 0;
+  color: var(--m-problem);
+  font-weight: 700;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--m-field-edge);
+  border-radius: 0.75rem;
+  color: var(--m-text);
+  background: #ffffff;
+  font: inherit;
+}
+
+  .field-input:focus-visible {
+    border-color: var(--m-purple-dark);
+    outline-offset: 2px;
+  }
+
+.field-has-error .field-input {
+  border-color: var(--m-problem);
+}
+
+/* The error's red bar down the left, as well as the words (never colour alone) */
+.field-has-error {
+  padding-left: 0.9rem;
+  border-left: 4px solid var(--m-problem);
+}
+
+.password-input {
+  position: relative;
+}
+
+  .password-input .field-input {
+    padding-right: 5.5rem;
+  }
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  min-width: 4.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--m-purple-dark);
+  background: #f1e4ff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.error-summary {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 3px solid var(--m-problem);
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+  .error-summary:focus {
+    outline: 3px solid var(--m-purple-dark);
+    outline-offset: 3px;
+  }
+
+  .error-summary h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .error-summary p {
+    margin: 0 0 0.5rem;
+  }
+
+  .error-summary ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .error-summary a {
+    color: var(--m-problem);
+    font-weight: 700;
+  }
+
+.form-aside {
+  margin: -0.5rem 0 0;
+}
+
+.form-status:empty {
+  display: none;
+}
+
+/* ───────────── Account-page frame: navy brand panel + form ───────────── */
+
+.auth {
+  display: grid;
+  grid-template-columns: minmax(20rem, 34rem) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.auth-brand {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  padding: 2.5rem 2.5rem 0;
+  color: #ffffff;
+  background: var(--m-text);
+}
+
+.auth-brand-home {
+  align-self: start;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+
+  .auth-brand-home:focus-visible {
+    outline-color: #ffffff;
+  }
+
+.auth-brand-line {
+  max-width: 20rem;
+  margin: auto 0 0;
+  padding-bottom: 1.5rem;
+  font-family: var(--m-display-font);
+  font-size: 2.1rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.auth-brand-picture {
+  display: block;
+  width: calc(100% + 5rem);
+  height: 40%;
+  margin: 0 -2.5rem;
+  object-fit: cover;
+  object-position: bottom;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 35%);
+  mask-image: linear-gradient(180deg, transparent, #000 35%);
+}
+
+.auth-main {
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+}
+
+  .auth-main:focus {
+    outline: none;
+  }
+
+.auth-card {
+  width: 100%;
+  max-width: 32rem;
+}
+
+  .auth-card h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.9rem, 3vw, 2.4rem);
+  }
+
+  .auth-card h1:focus {
+    outline: none;
+  }
+
+.auth-lead {
+  margin: 0 0 1.75rem;
+  font-size: 1.1rem;
+}
+
+.auth-switch {
+  margin: 1.75rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--m-border);
+}
+
+/* Phones and narrow windows: the logo on a navy strip above the form */
+@media (max-width: 56rem) {
+  .auth {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .auth-brand {
+    position: static;
+    height: auto;
+    padding: 1rem 1.25rem;
+  }
+
+  .auth-brand-line,
+  .auth-brand-picture {
+    display: none;
+  }
+
+  .auth-main {
+    place-items: start center;
+    padding: 2rem 1.25rem 3rem;
+  }
+}

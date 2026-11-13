@@ -1,6 +1,6 @@
-/** The menu's places that come later, each saying when, so no link leads nowhere. */
+/** The menu's places that come later, each saying when, so no link leads nowhere (signed-in pages). */
 export const COMING_SOON: { path: string; title: string; when: string }[] = [
-  { path: '/profile', title: 'Your profile', when: 'with accounts (M1)' },
+  { path: '/profile', title: 'Your profile', when: 'with accounts (W5)' },
   { path: '/schools', title: 'My Schools', when: 'with communities and sets (M2–M3)' },
   { path: '/sets', title: 'My Sets', when: 'with communities and sets (M2–M3)' },
   { path: '/sets/:setId', title: 'School set', when: 'with communities and sets (M2–M3)' },
@@ -12,4 +12,10 @@ export const COMING_SOON: { path: string; title: string; when: string }[] = [
   { path: '/groups', title: 'Groups', when: 'with communities and sets (M2–M3)' },
   { path: '/messages', title: 'Messages', when: 'with messaging' },
   { path: '/notifications', title: 'Notifications', when: 'with messaging' },
+]
+
+/** Account pages still to build (shown to signed-out visitors, in the account-page frame). */
+export const COMING_SOON_SIGNED_OUT: { path: string; title: string; when: string }[] = [
+  { path: '/register', title: 'Create an account', when: 'very soon (W3)' },
+  { path: '/forgot-password', title: 'Reset your password', when: 'very soon (W4)' },
 ]

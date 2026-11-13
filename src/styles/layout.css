@@ -40,6 +40,14 @@
   color: var(--m-muted);
 }
 
+.logo-onDark .logo-word {
+  color: #ffffff;
+}
+
+.logo-onDark .logo-tagline {
+  color: #c9cde0;   /* 11.0:1 on Midnight */
+}
+
 /* ───────────── Top bar ───────────── */
 
 .top-bar {
