@@ -1,0 +1,331 @@
+/*
+  The app frame: top bar, sidebar (wide screens) or bottom tabs (phones), and the page area.
+  Breakpoints: ≥ 64rem (1024px at normal text size) sidebar; below it the bottom tabs.
+  Everything is in rem, so the layout follows the reader's text size, and reflows (no sideways scrolling) at 400% zoom.
+*/
+
+.app {
+  min-height: 100vh;
+}
+
+/* ───────────── Logo ───────────── */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo-mark {
+  width: 2.75rem;
+  height: 2.5rem;
+  flex: none;
+}
+
+.logo-text {
+  display: grid;
+  line-height: 1.1;
+}
+
+.logo-word {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--m-text);
+}
+
+.logo-tagline {
+  font-size: 0.72rem;
+  color: var(--m-muted);
+}
+
+/* ───────────── Top bar ───────────── */
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: var(--m-topbar-height);
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--m-border);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.top-bar-home {
+  flex: none;
+  text-decoration: none;
+}
+
+.top-bar-search {
+  position: relative;
+  flex: 1;
+  max-width: 34rem;
+}
+
+  .top-bar-search input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0 1rem 0 2.75rem;
+    border: 1px solid #b9b2d6;   /* 3:1 against white, so the field's edge can be seen */
+    border-radius: 999px;
+    color: var(--m-text);
+    background: #ffffff;
+    font: inherit;
+  }
+
+    .top-bar-search input::placeholder {
+      color: var(--m-muted);
+    }
+
+.top-bar-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  color: var(--m-muted);
+  transform: translateY(-50%);
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.icon-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--m-text);
+}
+
+  .icon-button:hover {
+    background: #f1e4ff;
+  }
+
+.icon-button-dot {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.6rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: var(--m-purple);
+}
+
+.top-bar-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  color: var(--m-text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+  .top-bar-account:hover {
+    background: #f1e4ff;
+  }
+
+/* ───────────── Body: sidebar + page ───────────── */
+
+.app-body {
+  display: grid;
+  grid-template-columns: var(--m-sidebar-width) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+  .app-main:focus {
+    outline: none;   /* focused only by the skip link */
+  }
+
+/* ───────────── Sidebar (Midnight, white text 14.6:1) ───────────── */
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--m-topbar-height) + 1.5rem);
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: var(--m-text);
+}
+
+.sidebar-links {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 1rem 0.75rem;
+  list-style: none;
+}
+
+  .sidebar-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.75rem;
+    color: #e8ebf5;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+    .sidebar-links a:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-links a[aria-current='page'] {
+      color: #ffffff;
+      background: var(--m-purple);
+    }
+
+    .sidebar-links a:focus-visible {
+      outline-color: #ffffff;   /* white ring on the dark sidebar */
+    }
+
+.nav-count {
+  display: grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  margin-left: auto;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--m-purple-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.sidebar-art {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.sidebar-art-picture {
+  display: block;
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+  object-position: bottom;
+}
+
+/* A Midnight fade at the top keeps the white words readable over the picture */
+.sidebar-art::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5rem;
+  content: '';
+  background: linear-gradient(180deg, #081b30 30%, transparent);
+}
+
+/* The words sit on the dark top of the evening sky (white on it ≥ 13:1) */
+.sidebar-art-text {
+  z-index: 1;
+  position: absolute;
+  top: 0.75rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ───────────── Bottom tabs (phones) ───────────── */
+
+.bottom-nav {
+  display: none;
+}
+
+.bottom-nav-links {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0.25rem 0.25rem calc(0.25rem + env(safe-area-inset-bottom));
+  list-style: none;
+}
+
+  .bottom-nav-links a {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+    min-height: 3.5rem;
+    padding: 0.4rem 0.1rem;
+    border-radius: 0.75rem;
+    color: var(--m-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+
+    .bottom-nav-links a[aria-current='page'] {
+      color: var(--m-purple-dark);
+      background: #f1e4ff;
+    }
+
+  .bottom-nav-links .nav-count {
+    position: absolute;
+    top: 0.1rem;
+    right: calc(50% - 1.6rem);
+    min-width: 1.3rem;
+    height: 1.3rem;
+    font-size: 0.75rem;
+  }
+
+/* ───────────── Narrower screens ───────────── */
+
+@media (max-width: 64rem) {
+  .app-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1rem 1rem 6rem;   /* room for the bottom tabs */
+  }
+
+  .sidebar,
+  .top-bar-wide-only,
+  .logo-tagline {
+    display: none;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    display: block;
+    border-top: 1px solid var(--m-border);
+    background: #ffffff;
+  }
+}
+
+@media (max-width: 40rem) {
+  .top-bar {
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Phones: search moves into the page (Find Classmates); the bar keeps the logo and notifications */
+  .top-bar-search {
+    display: none;
+  }
+}

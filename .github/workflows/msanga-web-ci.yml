@@ -1,0 +1,46 @@
+# ============================================================
+# Msanga web: checks
+#
+# Runs on every push and pull request to main: install, lint (including the accessibility rules), tests (including
+# the axe accessibility check and the pinch-to-zoom check), build. A red cross on GitHub means one of them failed.
+#
+# No deploy yet: Msanga runs on Enobong's PC until M9 (deploy and pilot).
+# ============================================================
+
+name: Msanga web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Lint (code and accessibility rules)
+        run: npm run lint
+
+      - name: Tests (behaviour, axe accessibility check, pinch-to-zoom check)
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          # The build needs an API address; the real one is added at M9
+          VITE_API_BASE_URL: https://api.msanga.invalid

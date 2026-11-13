@@ -1,0 +1,184 @@
+/*
+  Msanga, light theme (the default; chosen 13 Nov 2026 from the UI mockup). Colours checked for contrast
+  (WCAG 2.2 AA: 4.5:1 for normal text) on the page (#f8f6ff) and on cards (#ffffff):
+    text    #081b30  16.2 / 17.4  ("Midnight")      muted        #4a5072   7.3 / 7.8
+    purple  #8e2de2   5.4 / 5.8       deep purple  #6e1fb8   7.7 / 8.2   (headings, links)
+    problem #b42318   6.1 / 6.6       white on a purple button 5.8
+    teal    #00c7e6   1.9 / 2.0  → decoration only, never text or icons that carry meaning
+  New pairings (13 Nov 2026, Home mock-up): sidebar text #e8ebf5 on Midnight 14.6; white on violet 5.8; Midnight
+  on the tile colours (aqua, lilac, cream, sky, mint) 14.3–16.3; "Going" #0b6b3a on #d7f5e4 5.7; deep purple on
+  lilac 6.8.
+  Sizes are in rem, so text follows the browser / phone font-size setting and works at 200%.
+  A dark theme comes later as a setting.
+*/
+
+:root {
+  --m-bg: #f8f6ff;
+  --m-card: #ffffff;
+  --m-border: #dcd6f0;
+  --m-text: #081b30;
+  --m-muted: #4a5072;
+  --m-purple: #8e2de2;
+  --m-purple-dark: #6e1fb8;
+  --m-teal: #00c7e6;
+  --m-problem: #b42318;
+  --m-radius: 1rem;
+  --m-shadow: 0 0.5rem 1.5rem rgba(8, 27, 48, 0.07);
+  --m-sidebar-width: 15rem;
+  --m-topbar-height: 4.5rem;
+
+  color-scheme: light;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: var(--m-text);
+  background: var(--m-bg);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+a {
+  color: var(--m-purple-dark);
+}
+
+/* One clear focus ring everywhere, for keyboard users (mouse clicks don't show it) */
+:focus-visible {
+  outline: 3px solid var(--m-purple-dark);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+/* Text for screen readers only (e.g. "Open Government College, Lagos" when the button just says "Open") */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* "Skip to the main content": hidden until a keyboard user tabs to it */
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background: var(--m-purple-dark);
+  font-weight: 700;
+  transform: translateY(-300%);
+}
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+.muted {
+  color: var(--m-muted);
+}
+
+.problem {
+  color: var(--m-problem);
+  font-weight: 600;
+}
+
+code {
+  overflow-wrap: anywhere;   /* long addresses wrap instead of making the page scroll sideways when zoomed */
+}
+
+/* Buttons: large enough to tap (at least 44 × 44 CSS pixels), white on violet (5.8:1) */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--m-purple);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+  .button:hover {
+    background: var(--m-purple-dark);
+  }
+
+.button-small {
+  min-height: 2.75rem;   /* still 44px tall: small in looks, not in tap size */
+  padding: 0 1rem;
+  font-size: 0.95rem;
+}
+
+.button-soft {
+  color: var(--m-purple-dark);
+  background: #f1e4ff;
+}
+
+  .button-soft:hover {
+    color: #ffffff;
+  }
+
+/* Cards and panels */
+.card,
+.panel {
+  padding: 1.25rem;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+  background: var(--m-card);
+  box-shadow: var(--m-shadow);
+}
+
+  .card h2 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--m-purple-dark);
+  }
+
+.card-result p {
+  margin: 0 0 0.5rem;
+}
+
+.greeting-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--m-purple);
+}
+
+.greeting-message {
+  font-size: 1.125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

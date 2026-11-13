@@ -1,0 +1,455 @@
+/* Home: welcome banner, quick actions, my sets, memory wall; side column with my card, reunions, Then & Now. */
+
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.home-main,
+.home-side {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+@media (max-width: 80rem) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Section headings with "See all" */
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+  .section-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+.see-all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+  .see-all:hover {
+    text-decoration: underline;
+  }
+
+/* ───────────── Welcome banner (as in the mock-up) ───────────── */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 13rem;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at 8% 15%, #e9d6ff 0, transparent 35%),
+              linear-gradient(90deg, #f7f1ff 0%, #f1e6ff 40%, #e8f3ff 100%);
+  box-shadow: var(--m-shadow);
+}
+
+/* The picture fills the right-hand ~60%; the left of it fades to transparent so the words sit on clear lilac */
+.hero-picture {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 72%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 26%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 26%);
+}
+
+/* The violet wave along the bottom, strongest on the left */
+.hero-wave {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2.75rem;
+}
+
+/* A soft white glow behind the words keeps them crisp where the picture's fade begins */
+.hero-text {
+  position: relative;
+  z-index: 1;
+  max-width: 45%;
+  padding: 2rem 0 2.75rem 2.25rem;
+  text-shadow: 0 0 0.75rem rgba(255, 255, 255, 0.9), 0 0 0.25rem rgba(255, 255, 255, 0.9);
+}
+
+  .hero-text h1 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(1.75rem, 2.6vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-text p {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* Medium widths: a little more room for the words */
+@media (max-width: 80rem) and (min-width: 40.01rem) {
+  .hero-text {
+    max-width: 46%;
+  }
+}
+
+/* Phones: the picture on top, the words below it on lilac, the wave under the picture */
+@media (max-width: 40rem) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero-picture {
+    position: static;
+    display: block;
+    width: 100%;
+    height: 10rem;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero-wave {
+    top: 8.25rem;
+    bottom: auto;
+    height: 2rem;
+  }
+
+  .hero-text {
+    max-width: none;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+}
+
+/* ───────────── Quick actions ───────────── */
+
+.quick-actions ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quick-action {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.5rem;
+  min-height: 6.5rem;
+  padding: 0.85rem 0.5rem;
+  border-radius: 1rem;
+  color: var(--m-text);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+
+  .quick-action svg {
+    color: var(--m-purple-dark);
+  }
+
+  .quick-action:hover {
+    transform: translateY(-2px);
+  }
+
+@media (max-width: 40rem) {
+  .quick-actions ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .quick-action {
+    min-height: 5.75rem;
+    padding: 0.6rem 0.3rem;
+    font-size: 0.85rem;
+  }
+}
+
+.quick-action-aqua { background: #e6f9fb; }
+.quick-action-lilac { background: #f1e4ff; }
+.quick-action-cream { background: #fff7e6; }
+.quick-action-sky { background: #e8f0ff; }
+.quick-action-mint { background: #e3f7ea; }
+
+/* ───────────── My School Sets ───────────── */
+
+.set-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-card {
+  overflow: hidden;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius);
+}
+
+.set-card-picture {
+  display: block;
+  width: 100%;
+  height: 7.5rem;
+  object-fit: cover;
+}
+
+.set-card-body {
+  padding: 0.85rem 1rem 1rem;
+}
+
+  .set-card-body h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .set-card-body p {
+    margin: 0.15rem 0 0;
+  }
+
+.set-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.set-card-members {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--m-muted);
+}
+
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 2px solid var(--m-purple);
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+  .pill-link:hover {
+    color: #ffffff;
+    background: var(--m-purple);
+  }
+
+/* ───────────── Memory Wall ───────────── */
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.memory {
+  margin: 0;
+}
+
+.memory-picture {
+  display: block;
+  width: 100%;
+  height: 6.5rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.memory figcaption {
+  margin-top: 0.35rem;
+  color: var(--m-muted);
+  font-size: 0.9rem;
+}
+
+/* ───────────── My card ───────────── */
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #ffffff 55%, #f1e4ff);
+}
+
+  .profile-card h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .profile-card p {
+    margin: 0.15rem 0 0.6rem;
+  }
+
+.avatar {
+  object-fit: cover;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 999px;
+  color: var(--m-text);
+  font-weight: 800;
+}
+
+.avatar-sm { width: 2.25rem; height: 2.25rem; font-size: 0.85rem; }
+.avatar-md { width: 3rem; height: 3rem; font-size: 1rem; }
+.avatar-lg { width: 4.5rem; height: 4.5rem; font-size: 1.4rem; box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px var(--m-purple); }
+
+/* ───────────── Upcoming reunions ───────────── */
+
+.reunion-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reunion {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.reunion-picture {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.reunion-body h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1rem;
+}
+
+.reunion-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--m-muted);
+  font-size: 0.92rem;
+}
+
+.badge-going {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  color: #0b6b3a;
+  background: #d7f5e4;
+  font-weight: 700;
+}
+
+/* Narrow side column or phone: the action goes under the details */
+@media (max-width: 26rem) {
+  .reunion {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+
+  .reunion-picture {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .reunion-action {
+    grid-column: 2;
+  }
+}
+
+/* ───────────── Then & Now (white on violet, 5.8–8.2:1) ───────────── */
+
+.then-now {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: var(--m-radius);
+  color: #ffffff;
+  background: linear-gradient(135deg, #6e1fb8, #8e2de2);
+  box-shadow: var(--m-shadow);
+}
+
+  .then-now h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.4rem;
+  }
+
+  .then-now p {
+    margin: 0 0 0.6rem;
+  }
+
+.then-now-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+  .then-now-link:focus-visible {
+    outline-color: #ffffff;
+  }
+
+.then-now-pictures {
+  position: relative;
+  flex: none;
+  width: 8rem;
+  height: 6rem;
+}
+
+.then-now-photo {
+  position: absolute;
+  object-fit: cover;
+  width: 5.5rem;
+  height: 4.5rem;
+  border: 4px solid #ffffff;
+  border-radius: 0.4rem;
+  box-shadow: 0 0.4rem 1rem rgba(8, 27, 48, 0.25);
+}
+
+.then-now-photo-old { top: 0; left: 0; transform: rotate(-6deg); }
+.then-now-photo-new { right: 0; bottom: 0; transform: rotate(5deg); }
+
+@media (max-width: 30rem) {
+  .then-now-pictures {
+    display: none;
+  }
+}

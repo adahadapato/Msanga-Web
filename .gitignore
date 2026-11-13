@@ -1,0 +1,11 @@
+# ===== Msanga web =====
+node_modules/
+dist/
+*.local
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log
+.DS_Store
+coverage/

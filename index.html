@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8" />
+
+    <!--
+      Pinch-to-zoom must always work (WCAG 1.4.4 and 1.4.10): never add "maximum-scale", "minimum-scale" or
+      "user-scalable=no" here. src/viewport.test.ts fails the build if anyone does.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="theme-color" content="#f8f6ff" />
+    <meta name="description" content="Msanga: find your old classmates, then keep your class organised and trusted." />
+
+    <title>Msanga</title>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
