@@ -2,7 +2,7 @@ import { apiFetch } from './http'
 
 /**
  * The account endpoints of msanga-api (/api/auth), exactly as the API has them: create account and the 6-digit code
- * (W3), sign in, refresh, sign out (W2). Forgot / reset password and the profile come in W4–W5.
+ * (W3), sign in, refresh, sign out (W2), forgot / reset password with a code (W4). The profile comes in W5.
  */
 
 /** The signed-in member (the API's MemberDto). No popularity counts, by design. */
@@ -58,6 +58,17 @@ export const authApi = {
   /** Always 204 (a new code goes out only if the email has an account waiting to be confirmed). */
   resendConfirmation: (email: string) =>
     apiFetch<void>('api/auth/resend-confirmation', { method: 'POST', body: { email } }),
+
+  /** Always 204 (a reset code goes out only if the email has an account). */
+  forgotPassword: (email: string) =>
+    apiFetch<void>('api/auth/forgot-password', { method: 'POST', body: { email } }),
+
+  /**
+   * 204: the new password is set, every session is signed out, and a "your password was changed" email goes out.
+   * 400 Auth.InvalidCode (the same answer for an unknown email); 400 Auth.WeakPassword (the code still works).
+   */
+  resetPassword: (email: string, code: string, newPassword: string) =>
+    apiFetch<void>('api/auth/reset-password', { method: 'POST', body: { email, code, newPassword } }),
 
   /** 401 Auth.InvalidCredentials, 403 Auth.EmailNotConfirmed or Auth.LockedOut, 429 too many tries. */
   login: (email: string, password: string) =>

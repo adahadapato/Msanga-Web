@@ -2,7 +2,21 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: W3 create account and the 6-digit code (13 Nov 2026)_
+_Last updated: W4 forgot and reset password with a code (13 Nov 2026)_
+
+## W4: forgot and reset password with a code (13 Nov 2026)
+
+"Forgot your password?" → the email (always "done": nobody can find out who has an account) → "Choose a new
+password" (the 6-digit code, works 15 minutes, and the new password; send a new code) → Sign in says "Your password is
+changed" with the email filled in. The API has signed out every device and emailed "your password was changed".
+
+| File | What it does |
+|---|---|
+| `src/api/auth.ts` | + `forgotPassword`, `resetPassword` |
+| `src/pages/auth/ForgotPasswordPage.tsx` | the email; on to Choose a new password |
+| `src/pages/auth/ResetPasswordPage.tsx` | code + new password; a wrong code on the code field, a weak password on the password field (the code still works) |
+| `src/pages/auth/SignInPage.tsx` | + "Your password is changed" with the email filled in |
+| `src/test/fakeApi.ts` | + reset codes; `pages/auth/ResetPasswordPage.test.tsx`; `TrackLocation` now a layout effect (no flaky address checks) |
 
 ## W3: create account and the 6-digit code (13 Nov 2026)
 
@@ -114,5 +128,5 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 
 ## Coming next
 
-- **Open question:** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account?
-- **W4:** forgot / reset password with a code. **W5:** profile, edit profile, the account menu in the top bar.
+- **M8 (privacy):** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account (and the API).
+- **W5:** profile, edit profile, the account menu in the top bar.

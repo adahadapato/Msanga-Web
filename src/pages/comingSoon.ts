@@ -13,8 +13,3 @@ export const COMING_SOON: { path: string; title: string; when: string }[] = [
   { path: '/messages', title: 'Messages', when: 'with messaging' },
   { path: '/notifications', title: 'Notifications', when: 'with messaging' },
 ]
-
-/** Account pages still to build (shown to signed-out visitors, in the account-page frame). */
-export const COMING_SOON_SIGNED_OUT: { path: string; title: string; when: string }[] = [
-  { path: '/forgot-password', title: 'Reset your password', when: 'very soon (W4)' },
-]

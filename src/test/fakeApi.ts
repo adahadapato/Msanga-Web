@@ -1,8 +1,9 @@
 import { vi } from 'vitest'
 import type { AuthTokens, Member } from '../api/auth'
 
-/** The one account the pretend API knows (like Ada, made in Swagger). */
+/** The one account the pretend API knows from the start (like Ada, made in Swagger). Reset for every test. */
 export const ADA = { email: 'ada@example.com', password: 'my old school bell' }
+const ADA_PASSWORD = ADA.password
 
 const ada: Member = {
   id: '0193a000-0000-7000-8000-000000000001',
@@ -22,6 +23,7 @@ const ada: Member = {
  * like the real API), sign out, /api/me and /api/hello. `calls` records every request; `sentCodes` the "emails".
  */
 export function installFakeApi() {
+  ADA.password = ADA_PASSWORD
   let n = 0
   const refreshTokens = new Map<string, 'active' | 'used'>()
   const accessTokens = new Set<string>()
@@ -38,6 +40,9 @@ export function installFakeApi() {
     codes.set(email, { code: String(codeNumber), wrongTries: 0 })
     sentCodes.push({ email, code: String(codeNumber) })
   }
+  /** Reset codes "emailed": email → the newest code and wrong tries so far. */
+  const resetCodes = new Map<string, { code: string; wrongTries: number }>()
+  const passwordOf = (email: string) => (email === ADA.email ? ADA.password : accounts.get(email)?.password)
   const invalidCode = () => problem(400, 'Auth.InvalidCode', "That code isn't right or has expired. Check it, or ask for a new code.")
 
   const problem = (status: number, code: string, detail: string) => Response.json({ status, code, detail }, { status })
@@ -96,6 +101,32 @@ export function installFakeApi() {
       case 'POST /api/auth/resend-confirmation': {
         const email = String(body.email).toLowerCase()
         if (accounts.get(email)?.confirmed === false) sendCode(email)
+        return new Response(null, { status: 204 })
+      }
+      case 'POST /api/auth/forgot-password': {
+        const email = String(body.email).toLowerCase()
+        if (passwordOf(email)) {
+          codeNumber += 1
+          resetCodes.set(email, { code: String(codeNumber), wrongTries: 0 })
+          sentCodes.push({ email, code: String(codeNumber) })
+        }
+        return new Response(null, { status: 204 })
+      }
+      case 'POST /api/auth/reset-password': {
+        const email = String(body.email).toLowerCase()
+        if (String(body.newPassword).length < 10) {
+          return problem(400, 'Auth.WeakPassword', 'Passwords must be at least 10 characters.')
+        }
+        const current = resetCodes.get(email)
+        if (!passwordOf(email) || !current || current.wrongTries >= 5) return invalidCode()
+        if (String(body.code).replace(/[ -]/g, '') !== current.code) {
+          current.wrongTries += 1
+          return invalidCode()
+        }
+        resetCodes.delete(email)
+        if (email === ADA.email) ADA.password = body.newPassword
+        else accounts.get(email)!.password = body.newPassword
+        refreshTokens.forEach((_, token) => refreshTokens.set(token, 'used'))     // every session signed out
         return new Response(null, { status: 204 })
       }
       case 'POST /api/auth/login': {

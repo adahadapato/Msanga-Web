@@ -9,13 +9,16 @@ import { usePageTitle } from '../../components/layout/page'
 
 /**
  * Sign in with email and password, against the real API. A wrong email and a wrong password get the same message
- * (the API decides that). Coming from "Check your email": says the email is confirmed and fills it in. Email not
+ * (the API decides that). Coming from "Check your email" or "Choose a new password": says so and fills the email
+ * in. Email not
  * confirmed yet: offers the way to enter the code. On success the route guard (RedirectIfMember) takes you where you
  * were heading, or Home.
  */
 export function SignInPage() {
   usePageTitle('Sign in')
-  const confirmedEmail = (useLocation().state as { confirmedEmail?: string } | null)?.confirmedEmail
+  const state = useLocation().state as { confirmedEmail?: string; passwordChangedEmail?: string } | null
+  const confirmedEmail = state?.confirmedEmail
+  const passwordChangedEmail = state?.passwordChangedEmail
   const signIn = useSignIn()
   const form = useFormProblems()
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string>()
@@ -43,9 +46,11 @@ export function SignInPage() {
   return (
     <>
       <h1>Sign in</h1>
-      {confirmedEmail
-        ? <p className="form-status-good" role="status">Your email is confirmed. Sign in to start.</p>
-        : <p className="auth-lead">Welcome back. Your set is waiting.</p>}
+      {confirmedEmail && <p className="form-status-good" role="status">Your email is confirmed. Sign in to start.</p>}
+      {passwordChangedEmail && (
+        <p className="form-status-good" role="status">Your password is changed. Sign in with the new one.</p>
+      )}
+      {!confirmedEmail && !passwordChangedEmail && <p className="auth-lead">Welcome back. Your set is waiting.</p>}
 
       <ErrorSummary problems={form.problems} message={form.message} attempt={form.attempt} />
       {unconfirmedEmail && (
@@ -62,7 +67,7 @@ export function SignInPage() {
           autoComplete="username"
           inputMode="email"
           spellCheck={false}
-          defaultValue={confirmedEmail}
+          defaultValue={confirmedEmail ?? passwordChangedEmail}
           error={problemFor(form.problems, 'email')}
         />
         <PasswordField id="password" label="Password" autoComplete="current-password" error={problemFor(form.problems, 'password')} />
