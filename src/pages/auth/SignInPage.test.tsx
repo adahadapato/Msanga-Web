@@ -46,7 +46,7 @@ describe('Sign in (against the pretend API)', () => {
     const { user } = renderApp('/')
     await signIn(user, 'ada@example.com', 'my old school bell')
     expect(await screen.findByRole('heading', { level: 1, name: 'Welcome back, Ada!' })).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Ada O., your profile' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Ada O., your account' })).toBeTruthy()
     expect(localStorage.getItem('msanga.refreshToken')).toBeTruthy()
   })
 

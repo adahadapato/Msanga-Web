@@ -9,7 +9,7 @@ const initials = (name: string) =>
  * A member's picture: their photo, or their initials in a soft circle when they have none. Decorative: the name is
  * always written next to it, so screen readers skip it (alt="", aria-hidden).
  */
-export function Avatar({ name, photo, size = 'md' }: { name: string; photo?: string | null; size?: 'sm' | 'md' | 'lg' }) {
+export function Avatar({ name, photo, size = 'md' }: { name: string; photo?: string | null; size?: 'sm' | 'md' | 'lg' | 'xl' }) {
   if (photo) return <img className={`avatar avatar-${size}`} src={photo} alt="" />
 
   const colour = COLOURS[[...name].reduce((sum, c) => sum + c.charCodeAt(0), 0) % COLOURS.length]

@@ -152,6 +152,17 @@
     margin: 0 0 0.75rem;
   }
 
+.field-textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .form-aside {
   margin: -0.5rem 0 0;
 }

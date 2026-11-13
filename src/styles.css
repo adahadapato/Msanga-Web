@@ -156,6 +156,17 @@ code {
     color: #ffffff;
   }
 
+/* White with a violet edge; deep purple words 8.2:1 */
+.button-outline {
+  border: 2px solid var(--m-purple);
+  color: var(--m-purple-dark);
+  background: #ffffff;
+}
+
+  .button-outline:hover {
+    color: #ffffff;
+  }
+
 /* Full width, a little taller: the main button of a form */
 .button-wide {
   width: 100%;

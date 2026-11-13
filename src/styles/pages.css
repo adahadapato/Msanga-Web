@@ -1,4 +1,4 @@
-/* Pages besides Home: Settings, "coming soon", Page not found. */
+/* Pages besides Home: your profile and Edit profile, Settings, "coming soon", Page not found. */
 
 .settings {
   display: grid;
@@ -8,6 +8,132 @@
 
   .settings h1 {
     margin: 0 0 0.75rem;
+  }
+
+.profile-page {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 56rem;
+}
+
+.profile-head {
+  overflow: hidden;
+  padding: 0 0 1.5rem;
+}
+
+.profile-cover {
+  height: 10rem;
+  background: linear-gradient(120deg, #d9b3ff, #b8f0f7);
+}
+
+  .profile-cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+.profile-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.25rem;
+  margin-top: -3.5rem;
+  padding: 0 1.5rem;
+}
+
+/* Wide: the name beside the photo, just below the cover */
+@media (min-width: 40.01rem) {
+  .profile-identity {
+    align-items: flex-start;
+  }
+
+  .profile-names {
+    margin-top: 4.1rem;
+  }
+}
+
+.profile-names h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+}
+
+  .profile-names h1:focus {
+    outline: none;
+  }
+
+.profile-names p {
+  margin: 0.2rem 0 0;
+}
+
+.profile-bio {
+  margin: 1rem 1.5rem 1.25rem;
+  font-size: 1.1rem;
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0 1.5rem;
+}
+
+.profile-page h2,
+.settings h2 {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+}
+
+.profile-set-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+  .profile-set-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .profile-set-list img {
+    width: 5rem;
+    height: 3.5rem;
+    border-radius: 0.6rem;
+    object-fit: cover;
+  }
+
+  .profile-set-list p {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.1rem 0 0;
+  }
+
+.details {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+  .details dt {
+    font-weight: 700;
+  }
+
+  .details dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+.form-panel h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+}
+
+  .form-panel h1:focus {
+    outline: none;
   }
 
 .coming-soon,

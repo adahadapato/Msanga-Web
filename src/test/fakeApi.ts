@@ -20,10 +20,11 @@ const ada: Member = {
 /**
  * A pretend msanga-api for the tests (replaces the browser's fetch): create account with a 6-digit code (one
  * InvalidCode answer for everything wrong, 5 tries per code), sign in, refresh (rotating: a refresh token works once,
- * like the real API), sign out, /api/me and /api/hello. `calls` records every request; `sentCodes` the "emails".
+ * like the real API), sign out, /api/me (read and edit) and /api/hello. `calls` records every request; `sentCodes` the "emails".
  */
 export function installFakeApi() {
   ADA.password = ADA_PASSWORD
+  let me: Member = { ...ada }    // Ada as the API holds her (Edit profile changes this)
   let n = 0
   const refreshTokens = new Map<string, 'active' | 'used'>()
   const accessTokens = new Set<string>()
@@ -59,7 +60,7 @@ export function installFakeApi() {
       accessTokenExpiresAt: new Date(Date.now() + 15 * 60_000).toISOString(),
       refreshToken,
       refreshTokenExpiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
-      member: ada,
+      member: me,
     }
   }
 
@@ -151,8 +152,19 @@ export function installFakeApi() {
         return new Response(null, { status: 204 })
       case 'GET /api/me':
         return bearer && accessTokens.has(bearer)
-          ? Response.json(ada)
+          ? Response.json(me)
           : problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
+      case 'PUT /api/me': {
+        if (!bearer || !accessTokens.has(bearer)) return problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
+        if (String(body.bio ?? '').length > 300) {
+          return Response.json({ status: 400, title: 'Validation failed', errors: { Bio: ['Keep it to 300 characters or fewer.'] } }, { status: 400 })
+        }
+        me = {
+          ...me, firstName: body.firstName, lastName: body.lastName, schoolSurname: body.schoolSurname || null,
+          bio: body.bio ?? '', displayName: `${body.firstName} ${String(body.lastName).charAt(0).toUpperCase()}.`,
+        }
+        return Response.json(me)
+      }
       case 'GET /api/hello':
         return Response.json({ title: 'Mme nsanga!', message: 'Your set is waiting.', serverTime: '2026-11-13T22:00:00Z' })
       default:

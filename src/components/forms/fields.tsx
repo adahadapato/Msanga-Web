@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type InputHTMLAttributes } from 'react'
+import { useEffect, useId, useRef, useState, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import type { FieldProblem } from './formHelpers'
 
 /**
@@ -82,6 +82,33 @@ export function PasswordField({ id, label, hint, error, ...input }: PasswordFiel
           {shown ? 'Hide' : 'Show'}{' '}<span className="visually-hidden">password</span>
         </button>
       </div>
+    </div>
+  )
+}
+
+type TextAreaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> & {
+  id: string
+  label: string
+  hint?: string
+  error?: string
+  optional?: boolean
+}
+
+export function TextArea({ id, label, hint, error, optional, ...area }: TextAreaProps) {
+  return (
+    <div className={`field${error ? ' field-has-error' : ''}`}>
+      <Label htmlFor={id} label={label} optional={optional} />
+      {hint && <p id={`${id}-hint`} className="field-hint">{hint}</p>}
+      {error && <p id={`${id}-error`} className="field-error"><span className="visually-hidden">Error: </span>{error}</p>}
+      <textarea
+        id={id}
+        name={id}
+        className="field-input field-textarea"
+        required={!optional}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(hint && `${id}-hint`, error && `${id}-error`)}
+        {...area}
+      />
     </div>
   )
 }

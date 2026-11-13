@@ -372,6 +372,7 @@
 .avatar-sm { width: 2.25rem; height: 2.25rem; font-size: 0.85rem; }
 .avatar-md { width: 3rem; height: 3rem; font-size: 1rem; }
 .avatar-lg { width: 4.5rem; height: 4.5rem; font-size: 1.4rem; box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px var(--m-purple); }
+.avatar-xl { width: 7.5rem; height: 7.5rem; font-size: 2.4rem; box-shadow: 0 0 0 5px #ffffff, 0 0 0 8px var(--m-purple); }
 
 /* ───────────── Upcoming reunions ───────────── */
 

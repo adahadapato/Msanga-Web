@@ -1,9 +1,9 @@
 import { Link } from 'react-router'
-import { Bell, ChevronDown, MessageCircle, Search } from 'lucide-react'
+import { Bell, MessageCircle, Search } from 'lucide-react'
 import { useId } from 'react'
 import type { Member } from '../../api/auth'
-import { Avatar } from '../ui/Avatar'
 import { Logo } from '../ui/Logo'
+import { AccountMenu } from './AccountMenu'
 
 /**
  * The bar across the top: logo, search (your sets, schools and classes only, never all members), notifications,
@@ -40,12 +40,7 @@ export function TopBar({ member, newNotifications, unreadMessages }: {
           {unreadMessages > 0 && <span className="icon-button-dot" aria-hidden="true" />}
           <span className="visually-hidden">Messages{unreadMessages > 0 ? `, ${unreadMessages} unread` : ''}</span>
         </Link>
-        <Link to="/profile" className="top-bar-account top-bar-wide-only">
-          <Avatar name={member.displayName} photo={member.photo} size="sm" />
-          <span>{member.displayName}</span>
-          <ChevronDown size={18} aria-hidden="true" />
-          <span className="visually-hidden">, your profile</span>
-        </Link>
+        <AccountMenu member={member} />
       </div>
     </header>
   )

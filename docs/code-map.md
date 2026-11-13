@@ -2,7 +2,22 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: W4 forgot and reset password with a code (13 Nov 2026)_
+_Last updated: W5 your profile and the account menu (13 Nov 2026): M1 done on the web side_
+
+## W5: your profile and the account menu (13 Nov 2026)
+
+"Your profile" (name, surname at school, about you, your sets, your email "only you see this"; no counts), Edit
+profile (saved through `PUT /api/me`; the new name shows in the top bar at once), and the top bar's account menu
+(Your profile, Settings, Sign out). With W1–W5, M1 (accounts) is done in the web app.
+
+| File | What it does |
+|---|---|
+| `src/api/members.ts` | `/api/me` (read, edit), through `authorizedFetch` (refreshes the session when needed) |
+| `src/pages/ProfilePage.tsx` | `ProfilePage` and `EditProfilePage`; the sets shown are still made up until M2 |
+| `src/components/layout/AccountMenu.tsx` | the top bar's ▾: a show/hide list (`aria-expanded`), Esc closes and returns to the button, a click elsewhere closes |
+| `src/components/forms/fields.tsx` | + `TextArea` (About you) |
+| `src/styles/*.css` | profile layout, the extra-large photo, outline button, the account menu |
+| `src/test/fakeApi.ts` | + `PUT /api/me`; `pages/ProfilePage.test.tsx` (profile, edit, no counts, the menu) |
 
 ## W4: forgot and reset password with a code (13 Nov 2026)
 
@@ -129,4 +144,4 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 ## Coming next
 
 - **M8 (privacy):** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account (and the API).
-- **W5:** profile, edit profile, the account menu in the top bar.
+- **M2–M3:** communities (schools) and sets: the made-up sets, reunions and memories are replaced by the API's.
