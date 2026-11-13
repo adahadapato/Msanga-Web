@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="247 142.5 758 696" role="img" aria-label="Msanga">
+  <title>Msanga</title>
+  <circle cx="462" cy="278" r="95.5" fill="#00E0FF"/>
+  <path d="M287,705 V540 A154,154 0 0 1 548.9,431.1 L614.9,496.9 A14,14 0 0 1 619.0,506.8 L619.0,617.9 A22,22 0 0 1 581.4,633.4 L486.8,538.8 A28,28 0 0 0 439.0,558.6 V705 A76,76 0 0 1 287,705 Z" fill="#00E0FF"/>
+  <circle cx="462" cy="278" r="95.5" fill="#AE3FF7" transform="matrix(-1 0 0 1 1252 0)"/>
+  <path d="M287,705 V540 A154,154 0 0 1 548.9,431.1 L614.9,496.9 A14,14 0 0 1 619.0,506.8 L619.0,617.9 A22,22 0 0 1 581.4,633.4 L486.8,538.8 A28,28 0 0 0 439.0,558.6 V705 A76,76 0 0 1 287,705 Z" fill="#AE3FF7" transform="matrix(-1 0 0 1 1252 0)"/>
+  <path d="M494.3,708.5 A174.5,174.5 0 0 0 757.7,708.5" fill="none" stroke="#FFFFFF" stroke-width="59" stroke-linecap="round"/>
+</svg>

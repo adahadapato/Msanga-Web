@@ -3,7 +3,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-/** A place in the app. The addresses are placeholders: those pages come with the backend (M1 onwards). */
+/** A place in the app. Places not built yet show a "coming soon" page saying when (pages/comingSoon.ts). */
 export interface NavItem {
   label: string
   href: string
@@ -36,3 +36,7 @@ export const BOTTOM_ITEMS: NavItem[] = [
   { label: 'Messages', href: '/messages', icon: MessageCircle, count: 3, countLabel: 'unread' },
   { label: 'Profile', href: '/profile', icon: User },
 ]
+
+/** Is this menu item the page you're on? Home only on "/", the others also on their sub-pages (/sets/gcl-1998). */
+export const isCurrent = (href: string, pathname: string) =>
+  href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)

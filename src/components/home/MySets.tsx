@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { UsersRound } from 'lucide-react'
 import type { MockSet } from '../../mock/homeData'
 import { formatCount } from './format'
@@ -22,9 +23,9 @@ export function MySets({ sets }: { sets: MockSet[] }) {
                 <span className="set-card-members">
                   <UsersRound size={18} aria-hidden="true" /> {formatCount(s.members)} members
                 </span>
-                <a href={`/sets/${s.id}`} className="pill-link">
+                <Link to={`/sets/${s.id}`} className="pill-link">
                   Open{' '}<span className="visually-hidden">{s.community}, {s.set}</span>
-                </a>
+                </Link>
               </div>
             </div>
           </li>

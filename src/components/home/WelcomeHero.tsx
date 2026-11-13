@@ -1,12 +1,14 @@
+import type { MockMember } from '../../mock/homeData'
 import { scenes } from '../../mock/homeData'
+import { Avatar } from '../ui/Avatar'
 
 /**
- * The welcome banner, as in the mock-up: the words on a soft lilac background on the left, the picture of friends on
- * the school lawn fading in from the right, and a violet wave along the bottom. The h1 is the page's only h1; the
- * picture and wave are decoration (alt="", aria-hidden). The fade is wide enough that the words never sit on the
- * picture, so they stay readable (Midnight on lilac ≥ 14:1).
+ * The welcome banner, as in the mock-ups. Wide screens: the words on soft lilac on the left, the picture of friends
+ * on the school lawn on the right (it starts after the words, so they never sit on the photo), and a violet wave
+ * along the bottom. Phones: the phone mock-up's greeting instead: your photo, "Welcome back, Hilary!" and one line.
+ * The h1 is the page's only h1; the picture, wave and photo are decoration.
  */
-export function WelcomeHero() {
+export function WelcomeHero({ member }: { member: MockMember }) {
   return (
     <section className="hero" aria-labelledby="welcome-heading">
       <img className="hero-picture" src={scenes.hero} alt="" />
@@ -22,8 +24,14 @@ export function WelcomeHero() {
         <path d="M0 60 C 160 20, 330 25, 470 55 S 690 95, 800 70 V 90 H 0 Z" fill="url(#hero-wave-fill)" />
       </svg>
       <div className="hero-text">
-        <h1 id="welcome-heading"><span className="nowrap">Welcome back to</span> Msanga!</h1>
-        <p>The home for school reunions, classmates and shared memories.</p>
+        <span className="hero-avatar"><Avatar name={member.displayName} photo={member.photo} size="lg" /></span>
+        <div>
+          <h1 id="welcome-heading">Welcome back, <span className="nowrap">{member.firstName}!</span></h1>
+          <p>
+            <span className="hero-line-wide">The home for school reunions, classmates and shared memories.</span>
+            <span className="hero-line-phone">Ready to reconnect?</span>
+          </p>
+        </div>
       </div>
     </section>
   )

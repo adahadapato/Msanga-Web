@@ -1,30 +1,34 @@
-import { BottomNav } from './components/layout/BottomNav'
-import { Sidebar } from './components/layout/Sidebar'
-import { TopBar } from './components/layout/TopBar'
-import { member } from './mock/homeData'
+import { Outlet, Route, Routes } from 'react-router'
+import { AppLayout } from './components/layout/AppLayout'
+import { useFocusOnNavigate } from './components/layout/page'
+import { COMING_SOON } from './pages/comingSoon'
 import { HomePage } from './pages/HomePage'
+import { ComingSoonPage, NotFoundPage, SettingsPage } from './pages/OtherPages'
 
 /**
- * The app frame: skip link, top bar, sidebar (wide screens) or bottom tabs (phones), and the page. Only Home exists
- * so far (a mock-up with made-up data); the other menu addresses are placeholders for the pages to come.
- *
- * Accessibility: "Skip to the main content" first; landmarks (banner, navigation, main); one h1 per page; the
- * current page marked with aria-current, not colour alone.
+ * Every page in one place (React Router). W1: the app frame with Home, Settings and a "coming soon" page for every
+ * menu place that isn't built yet. Sign-in and the account pages come in W2–W6; until then Home shows the mock-up's
+ * made-up member (src/mock/homeData.ts).
  */
 export default function App() {
-  const current = window.location.pathname
-
   return (
-    <div className="app">
-      <a className="skip-link" href="#main">Skip to the main content</a>
-      <TopBar member={member} newNotifications={1} unreadMessages={3} />
-      <div className="app-body">
-        <Sidebar current={current} />
-        <main id="main" tabIndex={-1} className="app-main">
-          <HomePage />
-        </main>
-      </div>
-      <BottomNav current={current} />
-    </div>
+    <Routes>
+      <Route element={<Root />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          {COMING_SOON.map(({ path, title, when }) => (
+            <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} />} />
+          ))}
+        </Route>
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
+}
+
+/** Wraps every page: after moving to another page, the focus goes to its h1. */
+function Root() {
+  useFocusOnNavigate()
+  return <Outlet />
 }

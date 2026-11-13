@@ -59,17 +59,17 @@
   box-shadow: var(--m-shadow);
 }
 
-/* The picture fills the right-hand ~60%; the left of it fades to transparent so the words sit on clear lilac */
+/* The picture fills the right-hand ~58% and fades in from its left edge, so the words (left ~44%) sit on clear lilac */
 .hero-picture {
   position: absolute;
   top: 0;
   right: 0;
-  width: 72%;
+  width: 58%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 26%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 26%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.75) 18%, #000 30%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.75) 18%, #000 30%);
 }
 
 /* The violet wave along the bottom, strongest on the left */
@@ -86,17 +86,24 @@
 .hero-text {
   position: relative;
   z-index: 1;
-  max-width: 45%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 44%;
+  min-height: 13rem;
   padding: 2rem 0 2.75rem 2.25rem;
-  text-shadow: 0 0 0.75rem rgba(255, 255, 255, 0.9), 0 0 0.25rem rgba(255, 255, 255, 0.9);
+}
+
+/* The phone greeting's photo and line: only on phones */
+.hero-avatar,
+.hero-line-phone {
+  display: none;
 }
 
   .hero-text h1 {
     margin: 0 0 0.6rem;
-    font-size: clamp(1.75rem, 2.6vw, 2.35rem);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.9rem, 2.8vw, 2.6rem);
+    line-height: 1.08;
   }
 
   .hero-text p {
@@ -115,32 +122,44 @@
   .hero-text {
     max-width: 46%;
   }
+
+  .hero-picture {
+    width: 56%;
+  }
 }
 
-/* Phones: the picture on top, the words below it on lilac, the wave under the picture */
+/* Phones: the phone mock-up's greeting — your photo, "Welcome back, Hilary!", "Ready to reconnect?" — on lilac */
 @media (max-width: 40rem) {
   .hero {
     min-height: 0;
+    background: linear-gradient(120deg, #ffffff 30%, #efe0ff 100%);
   }
 
-  .hero-picture {
-    position: static;
-    display: block;
-    width: 100%;
-    height: 10rem;
-    -webkit-mask-image: none;
-    mask-image: none;
+  .hero-picture,
+  .hero-wave,
+  .hero-line-wide {
+    display: none;
   }
 
-  .hero-wave {
-    top: 8.25rem;
-    bottom: auto;
-    height: 2rem;
+  .hero-avatar,
+  .hero-line-phone {
+    display: inline;
   }
 
   .hero-text {
     max-width: none;
-    padding: 1.25rem 1.25rem 1.5rem;
+    min-height: 0;
+    padding: 1.1rem 1.1rem;
+  }
+
+    .hero-text h1 {
+      margin-bottom: 0.2rem;
+      font-size: 1.55rem;
+    }
+
+  .hero-avatar .avatar-lg {
+    width: 4rem;
+    height: 4rem;
   }
 }
 
@@ -180,14 +199,16 @@
 
 @media (max-width: 40rem) {
   .quick-actions ul {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.6rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   .quick-action {
-    min-height: 5.75rem;
-    padding: 0.6rem 0.3rem;
-    font-size: 0.85rem;
+    min-height: 5.5rem;
+    padding: 0.6rem 0.2rem;
+    font-size: 0.8rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -265,6 +286,31 @@
     color: #ffffff;
     background: var(--m-purple);
   }
+
+/* Phones: each set as a compact row (picture, names, members), as in the phone mock-up */
+@media (max-width: 40rem) {
+  .set-card {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
+
+  .set-card-picture {
+    height: 100%;
+    min-height: 6rem;
+  }
+
+  .set-card-body {
+    padding: 0.75rem;
+  }
+
+    .set-card-body h3 {
+      font-size: 1rem;
+    }
+
+  .set-card-footer {
+    margin-top: 0.4rem;
+  }
+}
 
 /* ───────────── Memory Wall ───────────── */
 

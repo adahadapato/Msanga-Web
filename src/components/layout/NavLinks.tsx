@@ -1,4 +1,5 @@
-import type { NavItem } from './navItems'
+import { Link } from 'react-router'
+import { isCurrent, type NavItem } from './navItems'
 
 /**
  * A list of navigation links. The current page is marked with aria-current="page" (screen readers say "current
@@ -9,7 +10,7 @@ export function NavLinks({ items, current, className }: { items: NavItem[]; curr
     <ul className={className}>
       {items.map(({ label, href, icon: Icon, count, countLabel }) => (
         <li key={label}>
-          <a href={href} aria-current={href === current ? 'page' : undefined}>
+          <Link to={href} aria-current={isCurrent(href, current) ? 'page' : undefined}>
             <Icon className="nav-icon" size={22} aria-hidden="true" />
             <span className="nav-label">{label}</span>
             {count ? (
@@ -18,7 +19,7 @@ export function NavLinks({ items, current, className }: { items: NavItem[]; curr
                 <span className="visually-hidden">, {count} {countLabel}</span>
               </span>
             ) : null}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

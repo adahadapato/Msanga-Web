@@ -1,16 +1,23 @@
 /**
  * The Msanga logo: two friends (Friendship cyan and Reunion violet) meeting to form an M, with a smile under them.
- * A simplified stand-in until the SVG logo rebuild; the word "Msanga" is real text.
+ * The mark is the SVG rebuild of the logo (docs/brand/svg/msanga-mark.svg); the word "Msanga" is real text.
+ * It uses the logo's own brighter cyan and violet: the mark is decoration (hidden from screen readers), so it is
+ * exempt from the contrast rule; text and buttons keep the contrast-checked palette in styles.css.
  */
+const BODY =
+  'M287,705 V540 A154,154 0 0 1 548.9,431.1 L614.9,496.9 A14,14 0 0 1 619.0,506.8 L619.0,617.9 A22,22 0 0 1 581.4,633.4 L486.8,538.8 A28,28 0 0 0 439.0,558.6 V705 A76,76 0 0 1 287,705 Z'
+
 export function Logo({ withTagline = false }: { withTagline?: boolean }) {
   return (
     <span className="logo">
-      <svg className="logo-mark" viewBox="0 0 48 44" aria-hidden="true" focusable="false">
-        <circle cx="14" cy="8" r="7" fill="#00c7e6" />
-        <circle cx="34" cy="8" r="7" fill="#8e2de2" />
-        <path d="M4 40 V24 Q4 17 11 17 Q16 17 20 22 L24 27 L24 40 Z" fill="#00c7e6" />
-        <path d="M44 40 V24 Q44 17 37 17 Q32 17 28 22 L24 27 L24 40 Z" fill="#8e2de2" />
-        <path d="M14 33 Q24 41 34 33" stroke="#081b30" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <svg className="logo-mark" viewBox="272 167 708 646" aria-hidden="true" focusable="false">
+        <circle cx="462" cy="278" r="95.5" fill="#00e0ff" />
+        <path d={BODY} fill="#00e0ff" />
+        <g transform="matrix(-1 0 0 1 1252 0)">
+          <circle cx="462" cy="278" r="95.5" fill="#ae3ff7" />
+          <path d={BODY} fill="#ae3ff7" />
+        </g>
+        <path d="M494.3,708.5 A174.5,174.5 0 0 0 757.7,708.5" stroke="#081b30" strokeWidth="59" fill="none" strokeLinecap="round" />
       </svg>
       <span className="logo-text">
         <span className="logo-word">Msanga</span>

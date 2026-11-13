@@ -8,6 +8,8 @@
   New pairings (13 Nov 2026, Home mock-up): sidebar text #e8ebf5 on Midnight 14.6; white on violet 5.8; Midnight
   on the tile colours (aqua, lilac, cream, sky, mint) 14.3–16.3; "Going" #0b6b3a on #d7f5e4 5.7; deep purple on
   lilac 6.8.
+  W1 (13 Nov 2026): field edges #7a7499 on white 4.4 (the old #b9b2d6 was only 2.0; 3 is needed). Headings and the
+  logo word use Fredoka (the logo's lettering); body text stays the system font.
   Sizes are in rem, so text follows the browser / phone font-size setting and works at 200%.
   A dark theme comes later as a setting.
 */
@@ -22,6 +24,8 @@
   --m-purple-dark: #6e1fb8;
   --m-teal: #00c7e6;
   --m-problem: #b42318;
+  --m-field-edge: #7a7499;
+  --m-display-font: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --m-radius: 1rem;
   --m-shadow: 0 0.5rem 1.5rem rgba(8, 27, 48, 0.07);
   --m-sidebar-width: 15rem;
@@ -49,6 +53,12 @@ h1, h2, h3 {
   line-height: 1.2;
 }
 
+h1, h2 {
+  font-family: var(--m-display-font);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
 a {
   color: var(--m-purple-dark);
 }
@@ -58,6 +68,11 @@ a {
   outline: 3px solid var(--m-purple-dark);
   outline-offset: 3px;
   border-radius: 0.25rem;
+}
+
+/* Headings get the focus after moving to a new page (for screen readers); no ring on them, they aren't controls */
+[tabindex='-1']:focus {
+  outline: none;
 }
 
 /* Text for screen readers only (e.g. "Open Government College, Lagos" when the button just says "Open") */
@@ -140,6 +155,13 @@ code {
   .button-soft:hover {
     color: #ffffff;
   }
+
+/* Shown on wide screens only (above 40rem): e.g. the fifth quick action, your card beside Home */
+@media (max-width: 40rem) {
+  .wide-only {
+    display: none !important;
+  }
+}
 
 /* Cards and panels */
 .card,

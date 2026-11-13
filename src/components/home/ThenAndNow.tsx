@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { memories } from '../../mock/homeData'
 
 /** An invitation to share an old school photo next to a recent one. */
@@ -7,7 +8,7 @@ export function ThenAndNow() {
       <div>
         <h2 id="then-now-heading">Then &amp; Now</h2>
         <p>Share your school memories and stories, an old photo next to a new one.</p>
-        <a href="/memories/new" className="then-now-link">Share a memory</a>
+        <Link to="/memories/new" className="then-now-link">Share a memory</Link>
       </div>
       <div className="then-now-pictures" aria-hidden="true">
         <img className="then-now-photo then-now-photo-old" src={memories[0].picture} alt="" />

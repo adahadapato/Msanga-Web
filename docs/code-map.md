@@ -2,7 +2,26 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: M0 + Home mock-up (13 Nov 2026)_
+_Last updated: W1 frame, logo and Home fixes (13 Nov 2026)_
+
+## W1: frame, logo and Home fixes (13 Nov 2026)
+
+The first of the web app's M1 steps (W1–W6; sign-in comes in W2–W4). No sign-in yet: Home still shows the mock-up's
+made-up member.
+
+| File | What it does |
+|---|---|
+| `src/main.tsx` | starts React inside `BrowserRouter` (React Router) and loads the Fredoka font for headings |
+| `src/App.tsx` | every page in one place: the frame with Home, Settings and "coming soon" pages; Page not found |
+| `src/pages/comingSoon.ts`, `src/pages/OtherPages.tsx` | every menu place not built yet says when it comes (no dead links); Settings (with the connection check, moved from Home); Page not found |
+| `src/components/layout/page.ts` | tab titles ("Memories – Msanga"); after moving page, the focus goes to the new page's h1 (screen readers announce it) |
+| `src/components/layout/AppLayout.tsx` | the frame (skip link, top bar, sidebar or bottom tabs, main) around each page |
+| `src/components/layout/navItems.ts` (`isCurrent`), `NavLinks.tsx`, `TopBar.tsx`, `src/components/home/*` | links change page without reloading (`Link`); a menu item is also "current" on its sub-pages |
+| `src/components/ui/Logo.tsx`, `public/favicon.svg`, `public/apple-touch-icon.png`, `index.html` | the SVG logo (rebuilt from the PNGs, `docs/brand/svg`), favicon and phone home-screen icon |
+| `src/components/home/WelcomeHero.tsx` | "Welcome back, Hilary!"; wide: photo starts after the words; phones: photo + greeting + "Ready to reconnect?" |
+| `src/styles/*.css` | Fredoka headings; search edge #7a7499 (4.4:1, was 2.0:1); full-height sidebar with the evening scene at the bottom; phones: four tiles, compact set rows, your card hidden (Profile tab); `pages.css` |
+| `src/test/renderApp.tsx` | renders the whole app at an address (for tests); `App.test.tsx` checks pages, focus, current item, Settings; `ConnectionCheck.test.tsx` |
+| `docs/brand/`, `docs/mockups/` | the logo PNGs and SVG rebuild; the two mock-ups |
 
 ## Home mock-up (13 Nov 2026)
 
@@ -56,5 +75,5 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 
 ## Coming next
 
-- **M1 accounts:** register, confirm email, sign in (React Router, TanStack Query, forms with labelled fields and
-  error messages tied to each field).
+- **W2:** talking to the API (`src/api/auth.ts`: register, codes, sign in, tokens kept and refreshed).
+- **W3–W6:** create account + 6-digit code, sign in / out, forgot / reset password with a code, profile.

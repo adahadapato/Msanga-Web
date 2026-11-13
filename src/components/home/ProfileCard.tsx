@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { Pencil } from 'lucide-react'
 import type { MockMember } from '../../mock/homeData'
 import { Avatar } from '../ui/Avatar'
@@ -10,9 +11,9 @@ export function ProfileCard({ member }: { member: MockMember }) {
       <div>
         <h2 id="profile-heading">{member.displayName}</h2>
         <p className="muted">{member.mainSet}</p>
-        <a href="/profile" className="button button-small">
+        <Link to="/profile" className="button button-small">
           <Pencil size={16} aria-hidden="true" /> View profile
-        </a>
+        </Link>
       </div>
     </section>
   )

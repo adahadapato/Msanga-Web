@@ -1,21 +1,20 @@
-import { render, screen, within } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import App from '../App'
+import { screen, within } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { accessibilityProblems } from '../test/axe'
+import { renderApp } from '../test/renderApp'
 
 /** The mock-up's promises: one h1, clear link names, the current page marked, no personal counts. */
 describe('Home (mock-up)', () => {
   beforeEach(() => {
-    // The connection check asks the API; here it never answers
-    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
-    render(<App />)
+    renderApp('/')
   })
 
-  afterEach(() => vi.unstubAllGlobals())
-
-  it('has exactly one h1: the welcome', () => {
+  it('has exactly one h1: the welcome, by name, and no accessibility problems', async () => {
     const h1s = screen.getAllByRole('heading', { level: 1 })
     expect(h1s).toHaveLength(1)
-    expect(h1s[0].textContent).toBe('Welcome back to Msanga!')
+    expect(h1s[0].textContent).toBe('Welcome back, Hilary!')
+    expect(document.title).toBe('Home – Msanga')
+    expect(await accessibilityProblems()).toEqual([])
   })
 
   it('names every Open link after its set, not just "Open"', () => {

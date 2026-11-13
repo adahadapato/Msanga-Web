@@ -28,8 +28,9 @@
 }
 
 .logo-word {
-  font-size: 1.6rem;
-  font-weight: 800;
+  font-family: var(--m-display-font);
+  font-size: 1.7rem;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--m-text);
 }
@@ -69,7 +70,7 @@
     width: 100%;
     min-height: 2.75rem;
     padding: 0 1rem 0 2.75rem;
-    border: 1px solid #b9b2d6;   /* 3:1 against white, so the field's edge can be seen */
+    border: 2px solid var(--m-field-edge);   /* 4.4:1 against white, so the field's edge can be seen */
     border-radius: 999px;
     color: var(--m-text);
     background: #ffffff;
@@ -155,10 +156,13 @@
 
 /* ───────────── Sidebar (Midnight, white text 14.6:1) ───────────── */
 
+/* Fills the window's height beside the page, with the evening scene at the bottom (as in the mock-up) */
 .sidebar {
   position: sticky;
   top: calc(var(--m-topbar-height) + 1.5rem);
   align-self: start;
+  height: calc(100vh - var(--m-topbar-height) - 3rem);
+  min-height: 34rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -215,38 +219,44 @@
 
 .sidebar-art {
   position: relative;
+  flex: 1;
+  min-height: 12rem;
   margin-top: 0.5rem;
 }
 
 .sidebar-art-picture {
+  position: absolute;
+  inset: auto 0 0;
   display: block;
   width: 100%;
-  height: 12rem;
+  height: 100%;
+  max-height: 18rem;
   object-fit: cover;
   object-position: bottom;
 }
 
-/* A Midnight fade at the top keeps the white words readable over the picture */
-.sidebar-art::before {
+/* The words sit at the bottom, on the dark trees and ground (white on them ≥ 12:1, helped by a Midnight fade) */
+.sidebar-art::after {
   position: absolute;
-  inset: 0 0 auto;
-  height: 5rem;
+  inset: auto 0 0;
+  height: 9rem;
   content: '';
-  background: linear-gradient(180deg, #081b30 30%, transparent);
+  background: linear-gradient(0deg, rgba(8, 27, 48, 0.92) 35%, transparent);
 }
 
 /* The words sit on the dark top of the evening sky (white on it ≥ 13:1) */
 .sidebar-art-text {
-  z-index: 1;
+  z-index: 2;
   position: absolute;
-  top: 0.75rem;
+  bottom: 1.25rem;
   left: 1.25rem;
   right: 1.25rem;
   margin: 0;
   color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.3;
+  font-family: var(--m-display-font);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 /* ───────────── Bottom tabs (phones) ───────────── */
