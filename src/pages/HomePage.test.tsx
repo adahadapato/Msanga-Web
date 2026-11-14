@@ -19,7 +19,7 @@ describe('Home (signed in as Ada; sets, reunions and memories made up)', () => {
   })
 
   it('names every Open link after its set, not just "Open"', () => {
-    expect(screen.getByRole('link', { name: 'Open Government College, Lagos, Class of 1998' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Open Government College, Lagos, 1998 Set' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Open University of Benin, Alumni Network' })).toBeTruthy()
   })
 

@@ -1,11 +1,18 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useLocation } from 'react-router'
 
 /** Sets the browser tab's title, e.g. "Sign in – Msanga" (screen readers announce it; WCAG 2.4.2). */
+// export function usePageTitle(title: string) {
+//   useEffect(() => {
+//     document.title = `${title} – Msanga`
+//   }, [title])
+// }
+
+
 export function usePageTitle(title: string) {
-  useEffect(() => {
-    document.title = `${title} – Msanga`
-  }, [title])
+    useLayoutEffect(() => {
+        document.title = `${title} – Msanga`
+    }, [title])
 }
 
 /**

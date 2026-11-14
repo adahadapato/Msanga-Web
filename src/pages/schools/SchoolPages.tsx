@@ -6,11 +6,11 @@ import { ApiError } from '../../api/http'
 import { usePageTitle } from '../../components/layout/page'
 import { MembershipPanel } from '../../components/schools/MembershipPanel'
 import { NewLabel, SchoolResult } from '../../components/schools/SchoolResult'
-import { levelAndPlace, MY_SCHOOLS, yearsText } from '../../components/schools/schoolText'
+import { detailsText, levelAndPlace, MY_SCHOOLS } from '../../components/schools/schoolText'
 
 /**
- * A school's page: its name, level and place, its other names; "Were you a student here?" (MembershipPanel). Its
- * sets (Class of 1998…) come in M3b.
+ * A school's page: its name, level and place, its other names; "Were you a student here?" with your set
+ * (MembershipPanel); how its sets are named.
  * Opened from a result, it shows at once (the result came along with the link) and is checked with the API.
  */
 export function SchoolPage() {
@@ -47,10 +47,10 @@ export function SchoolPage() {
         <section className="panel" aria-labelledby="school-sets-title">
           <h2 id="school-sets-title"><UsersRound size={22} aria-hidden="true" /> Sets</h2>
           <p>
-            Soon you'll find your set here (Class of 1998, say), join it, and see who else from your year is on
-            Msanga.
+            Each year here is a set, named by the year students{' '}
+            {s.setNaming === 'ByEntryYear' ? 'came in' : 'left'}: the 1998 Set, the 1999 Set… Who's in each set shows
+            once classmates can confirm each other, which comes next.
           </p>
-          <p className="muted">Sets come in the next part of Msanga.</p>
         </section>
 
         <p><Link to="/schools/find">Find another school</Link></p>
@@ -112,7 +112,13 @@ export function MySchoolsPage() {
           <ul className="school-results" aria-label="Your schools">
             {mine.data.map((m) => (
               <SchoolResult key={m.school.id} school={m.school}>
-                <p className="membership-years">You: {yearsText(m)}</p>
+                <p className="membership-years">
+                  You: {m.fromYear === m.toYear ? m.fromYear : `${m.fromYear}–${m.toYear}`} ·{' '}
+                  {m.setName && m.setYear !== null
+                    ? <Link to={`/schools/${m.school.id}/sets/${m.setYear}`}>{m.setName}</Link>
+                    : 'set not chosen yet'}
+                  {detailsText(m) && <span className="muted"> · {detailsText(m)}</span>}
+                </p>
               </SchoolResult>
             ))}
           </ul>
@@ -125,5 +131,62 @@ export function MySchoolsPage() {
         </p>
       </section>
     </div>
+  )
+}
+
+/**
+ * A set's page: "1998 Set" at a school. Only for people who joined the school (the API answers 403 otherwise). Who's
+ * in it shows once classmates can confirm each other (M3c): until then, nobody is listed.
+ */
+export function SetPage() {
+  const { schoolId = '', year = '' } = useParams()
+  const set = useQuery({
+    queryKey: ['communities', schoolId, 'sets', year],
+    queryFn: ({ signal }) => membershipApi.set(schoolId, Number(year), signal),
+    staleTime: 5 * 60_000,
+  })
+  const error = set.error instanceof ApiError ? set.error : undefined
+  usePageTitle(set.data ? `${set.data.name}, ${set.data.school.name}` : `${year} Set`)
+
+  if (set.data) {
+    const s = set.data
+    return (
+      <div className="schools-page">
+        <section className="panel" aria-labelledby="set-title">
+          <h1 id="set-title" className="heading-with-icon"><UsersRound size={32} aria-hidden="true" /> {s.name}</h1>
+          <p className="muted">
+            at <Link to={`/schools/${s.school.id}`}>{s.school.name}</Link>
+          </p>
+          {s.isMine && <p className="membership-years">This is your set.</p>}
+        </section>
+        <section className="panel" aria-labelledby="set-people-title">
+          <h2 id="set-people-title">Who's here</h2>
+          <p>
+            Classmates in the {s.name} will show here once they can confirm each other: that's the next part of
+            Msanga. Until then, nobody's name is shown, not even to people from the school.
+          </p>
+        </section>
+      </div>
+    )
+  }
+
+  return (
+    <section className="panel coming-soon" aria-labelledby="set-title">
+      <UsersRound size={40} aria-hidden="true" />
+      <h1 id="set-title">{year} Set</h1>
+      {error?.code === 'Community.MembersOnly' ? (
+        <>
+          <p>Only people who were students at this school can see its sets.</p>
+          <Link to={`/schools/${schoolId}`} className="button button-soft">Go to the school</Link>
+        </>
+      ) : set.isError ? (
+        <>
+          <p role="alert">{set.error.message}</p>
+          <button type="button" className="button button-soft" onClick={() => set.refetch()}>Try again</button>
+        </>
+      ) : (
+        <p role="status">Loading the set…</p>
+      )}
+    </section>
   )
 }

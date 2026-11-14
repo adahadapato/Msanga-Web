@@ -24,7 +24,12 @@ export interface Community {
   isNew: boolean
   /** "Also known as…", A–Z. */
   otherNames: string[]
+  /** How the school names its sets: 1992–1998 is the "1998 Set" (by leaving year) or the "1992 Set" (by entry). */
+  setNaming: SetNaming
 }
+
+/** How a school names its sets (each school chooses; by leaving year unless an admin changes it). */
+export type SetNaming = 'ByLeavingYear' | 'ByEntryYear'
 
 /** Fewer letters than this and the API answers with no schools, so the page doesn't ask (saves data). */
 export const SEARCH_MIN_LENGTH = 2
@@ -82,10 +87,41 @@ export interface SchoolYears {
   finished: boolean
 }
 
-/** One of my schools: the school and my years there (MembershipDto). */
+/** My set and details at a school, as the form sends them ("" = not given). */
+export interface MySet {
+  setYear: number
+  house: string
+  classArm: string
+  hostel: string
+  department: string
+}
+
+/** One of my schools: the school, my years there, my set and details (MembershipDto). */
 export interface Membership extends SchoolYears {
   school: Community
   status: MembershipStatus
+  /** My set's year; null until I choose it. */
+  setYear: number | null
+  /** "1998 Set"; null until I choose. */
+  setName: string | null
+  /** The set my years suggest (pre-selected on the form); null if I must choose (left early). */
+  suggestedSetYear: number | null
+  /** The sets my years allow, first to last. */
+  setYearChoices: number[]
+  house: string | null
+  classArm: string | null
+  hostel: string | null
+  department: string | null
+}
+
+/** A set's page (SetDto). Who's in it comes once members can confirm each other (M3c). */
+export interface SchoolSet {
+  school: Community
+  year: number
+  /** "1998 Set". */
+  name: string
+  /** True if it's my set. */
+  isMine: boolean
 }
 
 /** The earliest year on the forms (the API's rule too). */
@@ -114,6 +150,14 @@ export const membershipApi = {
   /** Correct my years. */
   change: (communityId: string, years: SchoolYears) =>
     authorizedFetch<Membership>(membershipPath(communityId), { method: 'PUT', body: years }),
+
+  /** Choose my set, with my details (400 Community.SetOutOfRange if the set doesn't fit my years). */
+  chooseSet: (communityId: string, set: MySet) =>
+    authorizedFetch<Membership>(`${membershipPath(communityId)}/set`, { method: 'PUT', body: set }),
+
+  /** A set's page (403 Community.MembersOnly if I haven't joined the school). */
+  set: (communityId: string, year: number, signal?: AbortSignal) =>
+    authorizedFetch<SchoolSet>(`api/communities/${encodeURIComponent(communityId)}/sets/${year}`, { signal }),
 
   /** Leave the school (my membership is deleted). */
   leave: (communityId: string) => authorizedFetch<void>(membershipPath(communityId), { method: 'DELETE' }),

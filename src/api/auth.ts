@@ -15,7 +15,7 @@ export interface Member {
   schoolSurname: string | null
   /** "Hilary A." */
   displayName: string
-  /** e.g. "Class of 1998"; null until sets exist (M2–M3). */
+  /** e.g. "1998 Set"; null until sets exist (M2–M3). */
   mainSet: string | null
   bio: string
   /** Their picture; null = initials. */

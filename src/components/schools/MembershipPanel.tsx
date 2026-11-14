@@ -7,11 +7,14 @@ import {
 import { ErrorSummary, RadioGroup, SelectField } from '../forms/fields'
 import { formValues, problemFor, type FieldProblem } from '../forms/formHelpers'
 import { useFormProblems } from '../forms/useFormProblems'
-import { membershipKey, MY_SCHOOLS, yearsText } from './schoolText'
+import { Link } from 'react-router'
+import { detailsText, membershipKey, MY_SCHOOLS, yearsText } from './schoolText'
+import { SetForm } from './SetForm'
 
 /**
  * On a school's page: "Were you a student here?" (join with your years), or "You were a student here" (your years,
- * Change years, Leave this school). Only ever about the signed-in member.
+ * your set and details, Change years, Leave this school). Joining goes straight on to "Your set". Only ever about the
+ * signed-in member.
  *
  * Focus: opening the form goes to its first field; after saving, joining or cancelling, the focus returns to this
  * box's heading, and what happened is announced (role="status").
@@ -24,7 +27,7 @@ export function MembershipPanel({ school }: { school: Community }) {
     queryFn: ({ signal }) => membershipApi.mine(school.id, signal),
     staleTime: 5 * 60_000,
   })
-  const [mode, setMode] = useState<'view' | 'form' | 'leave'>('view')
+  const [mode, setMode] = useState<'view' | 'form' | 'set' | 'leave'>('view')
   const [said, setSaid] = useState('')
   const heading = useRef<HTMLHeadingElement>(null)
   const leaveQuestion = useRef<HTMLParagraphElement>(null)
@@ -32,7 +35,7 @@ export function MembershipPanel({ school }: { school: Community }) {
   const backToView = (message = '') => {
     setMode('view')
     setSaid(message)
-    requestAnimationFrame(() => heading.current?.focus())
+    heading.current?.focus()   // the heading is always there, so the focus can move at once
   }
 
   const remember = (m: Membership | null) => {
@@ -79,7 +82,14 @@ export function MembershipPanel({ school }: { school: Community }) {
           onSave={async (years) => {
             const saved = mine ? await membershipApi.change(school.id, years) : await membershipApi.join(school.id, years)
             remember(saved)
-            backToView(mine ? 'Your years are saved.' : `You've joined ${school.name}.`)
+            if (mine) {
+              backToView(saved.setYear === null && mine.setYear !== null
+                ? 'Your years are saved. Your set no longer fits them: choose it again.'
+                : 'Your years are saved.')
+            } else {
+              setMode('set')   // the set form takes the focus
+              setSaid(`You've joined ${school.name}. Now choose your set.`)
+            }
           }}
         />
       )}
@@ -91,13 +101,35 @@ export function MembershipPanel({ school }: { school: Community }) {
         </>
       )}
 
+      {mode === 'set' && mine && (
+        <SetForm
+          membership={mine}
+          onCancel={() => backToView()}
+          onSave={async (set) => {
+            remember(await membershipApi.chooseSet(school.id, set))
+            backToView('Your set is saved.')
+          }}
+        />
+      )}
+
       {mode === 'view' && mine && (
         <>
           <p className="membership-years">{yearsText(mine)}</p>
+          {mine.setName && mine.setYear !== null ? (
+            <p className="membership-set">
+              Your set: <Link to={`/schools/${school.id}/sets/${mine.setYear}`}>{mine.setName}</Link>
+              {detailsText(mine) && <span className="muted"> · {detailsText(mine)}</span>}
+            </p>
+          ) : (
+            <p>You haven't chosen your set yet.</p>
+          )}
           {mine.status === 'Joined' && (
             <p className="muted">Not confirmed yet. Classmates who knew you will be able to confirm you soon.</p>
           )}
           <div className="form-buttons">
+            <button type="button" className={mine.setName ? 'button button-soft' : 'button'} onClick={() => setMode('set')}>
+              {mine.setName ? 'Change your set' : 'Choose your set'}
+            </button>
             <button type="button" className="button button-soft" onClick={() => setMode('form')}>Change years</button>
             <button type="button" className="button button-outline" onClick={() => setMode('leave')}>
               Leave this school

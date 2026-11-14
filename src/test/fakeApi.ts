@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import type { AuthTokens, Member } from '../api/auth'
-import type { Community, Membership, SchoolYears } from '../api/communities'
+import type { Community, Membership, MySet, SchoolYears } from '../api/communities'
 
 /** The one account the pretend API knows from the start (like Ada, made in Swagger). Reset for every test. */
 export const ADA = { email: 'ada@example.com', password: 'my old school bell' }
@@ -20,12 +20,12 @@ const ada: Member = {
 
 /** The schools the pretend API knows (like the API's development seed, plus one added by a member). */
 export const SCHOOLS: Community[] = [
-  { id: 'fgcie', name: 'Federal Government College, Ikot Ekpene', kind: 'School', level: 'Secondary', town: 'Ikot Ekpene', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['FGCIE'] },
-  { id: 'gcu', name: 'Government College, Umuahia', kind: 'School', level: 'Secondary', town: 'Umuahia', state: 'Abia', countryCode: 'NG', isNew: false, otherNames: ['GCU'] },
-  { id: 'uniuyo', name: 'University of Uyo', kind: 'School', level: 'Tertiary', town: 'Uyo', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['UniUyo'] },
-  { id: 'kcl', name: "King's College", kind: 'School', level: 'Secondary', town: 'Lagos', state: 'Lagos', countryCode: 'NG', isNew: false, otherNames: ['KC'] },
-  { id: 'hcc', name: 'Holy Child College', kind: 'School', level: 'Secondary', town: 'Ikoyi', state: 'Lagos', countryCode: 'NG', isNew: true, otherNames: [] },
-  { id: 'croydon', name: 'Croydon High School', kind: 'School', level: 'Secondary', town: 'Croydon', state: 'Greater London', countryCode: 'GB', isNew: false, otherNames: [] },
+  { id: 'fgcie', name: 'Federal Government College, Ikot Ekpene', kind: 'School', level: 'Secondary', town: 'Ikot Ekpene', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['FGCIE'], setNaming: 'ByLeavingYear' },
+  { id: 'gcu', name: 'Government College, Umuahia', kind: 'School', level: 'Secondary', town: 'Umuahia', state: 'Abia', countryCode: 'NG', isNew: false, otherNames: ['GCU'], setNaming: 'ByLeavingYear' },
+  { id: 'uniuyo', name: 'University of Uyo', kind: 'School', level: 'Tertiary', town: 'Uyo', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['UniUyo'], setNaming: 'ByLeavingYear' },
+  { id: 'kcl', name: "King's College", kind: 'School', level: 'Secondary', town: 'Lagos', state: 'Lagos', countryCode: 'NG', isNew: false, otherNames: ['KC'], setNaming: 'ByLeavingYear' },
+  { id: 'hcc', name: 'Holy Child College', kind: 'School', level: 'Secondary', town: 'Ikoyi', state: 'Lagos', countryCode: 'NG', isNew: true, otherNames: [], setNaming: 'ByLeavingYear' },
+  { id: 'croydon', name: 'Croydon High School', kind: 'School', level: 'Secondary', town: 'Croydon', state: 'Greater London', countryCode: 'GB', isNew: false, otherNames: [], setNaming: 'ByLeavingYear' },
 ]
 
 const keyWords = (text: string) =>
@@ -77,10 +77,36 @@ export function installFakeApi() {
   /** The schools, for this test only (adding one doesn't leak into the next test). */
   const schools: Community[] = [...SCHOOLS]
   /** Ada's schools: school id → her years (only ever her own, like the API). */
-  const memberships = new Map<string, SchoolYears & { status: Membership['status'] }>()
-  const membershipOf = (school: Community): Membership => ({ school, ...memberships.get(school.id)! })
+  const memberships = new Map<string, SchoolYears & { status: Membership['status'] } & Partial<Record<keyof MySet, number | string | null>>>()
+  /** Like the API's MembershipDto: the suggested set and the allowed sets come from the years and the school's naming. */
+  const membershipOf = (school: Community): Membership => {
+    const m = memberships.get(school.id)!
+    const byEntry = school.setNaming === 'ByEntryYear'
+    const [first, last] = byEntry ? [m.fromYear - 6, m.toYear] : [m.fromYear, m.toYear + 6]
+    const setYear = (m.setYear as number | undefined) ?? null
+    const text = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null)
+    return {
+      school, fromYear: m.fromYear, toYear: m.toYear, finished: m.finished, status: m.status,
+      setYear, setName: setYear ? `${setYear} Set` : null,
+      suggestedSetYear: byEntry ? m.fromYear : m.finished ? m.toYear : null,
+      setYearChoices: Array.from({ length: last - first + 1 }, (_, i) => first + i),
+      house: text(m.house), classArm: text(m.classArm), hostel: text(m.hostel), department: text(m.department),
+    }
+  }
 
   /** /api/communities/{id}/membership, like the API: the same year rules, one per school, 404 if not joined. */
+  /** PUT …/membership/set, like the API: the set must fit the years (400 Community.SetOutOfRange). */
+  function chooseSet(school: Community, body: MySet) {
+    if (!memberships.has(school.id)) return problem(404, 'Community.NotAMember', "You haven't joined this school.")
+    const { setYearChoices } = membershipOf(school)
+    if (!setYearChoices.includes(body.setYear)) {
+      const [first, last] = [setYearChoices[0], setYearChoices[setYearChoices.length - 1]]
+      return problem(400, 'Community.SetOutOfRange', `Choose a set between ${first} and ${last}: those fit the years you were here.`)
+    }
+    memberships.set(school.id, { ...memberships.get(school.id)!, ...body })
+    return Response.json(membershipOf(school))
+  }
+
   function membership(method: string, school: Community, body: SchoolYears) {
     const notAMember = () => problem(404, 'Community.NotAMember', "You haven't joined this school.")
     if (method === 'GET') return memberships.has(school.id) ? Response.json(membershipOf(school)) : notAMember()
@@ -95,7 +121,12 @@ export function installFakeApi() {
       return Response.json({ status: 400, title: 'Validation failed',
         errors: { ToYear: ["The year you left can't be before the year you started."] } }, { status: 400 })
     }
-    memberships.set(school.id, { ...body, status: memberships.get(school.id)?.status ?? 'Joined' })
+    memberships.set(school.id, { ...memberships.get(school.id), ...body, status: memberships.get(school.id)?.status ?? 'Joined' })
+    // New years that no longer fit the chosen set clear it (like the API)
+    const now = membershipOf(school)
+    if (now.setYear !== null && !now.setYearChoices.includes(now.setYear)) {
+      memberships.set(school.id, { ...memberships.get(school.id)!, setYear: null })
+    }
     return Response.json(membershipOf(school), { status: method === 'POST' ? 201 : 200 })
   }
   /** Adding a school, like the API: the same name and town → AlreadyListed; a search by the name finds some →
@@ -113,7 +144,7 @@ export function installFakeApi() {
     }
     const added: Community = {
       id: `added-${schools.length}`, name: body.name, kind: 'School', level: body.level, town: body.town,
-      state: body.state || null, countryCode: body.countryCode, isNew: true, otherNames: body.otherNames,
+      state: body.state || null, countryCode: body.countryCode, isNew: true, otherNames: body.otherNames, setNaming: 'ByLeavingYear',
     }
     schools.push(added)
     return Response.json(added, { status: 201 })
@@ -146,11 +177,17 @@ export function installFakeApi() {
     // Schools (members only)
     if (path.startsWith('/api/communities')) {
       if (!bearer || !accessTokens.has(bearer)) return problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
-      const [, , , id, part] = path.split('/')
+      const [, , , id, part, rest] = path.split('/')
       if (method === 'POST' && !id) return addSchool(body)
-      if (part === 'membership') {
+      if (part === 'membership' || part === 'sets') {
         const school = schools.find((s) => s.id === id)
-        return school ? membership(method, school, body) : problem(404, 'Community.NotFound', "We couldn't find that school.")
+        if (!school) return problem(404, 'Community.NotFound', "We couldn't find that school.")
+        if (part === 'membership') return rest === 'set' ? chooseSet(school, body) : membership(method, school, body)
+        if (!memberships.has(school.id)) {
+          return problem(403, 'Community.MembersOnly', 'Only people who were students here can see this. Join the school first.')
+        }
+        const year = Number(rest)
+        return Response.json({ school, year, name: `${year} Set`, isMine: memberships.get(school.id)!.setYear === year })
       }
       if (!id) return Response.json(searchSchools(schools, address.searchParams.get('search') ?? ''))
       const school = schools.find((s) => s.id === id)
@@ -268,6 +305,8 @@ export function installFakeApi() {
     issue,
     /** Ada's schools (to start a test with her already in some). */
     memberships,
+    /** The schools of this test (to change one, e.g. its set naming). */
+    schools,
     /** Every access token stops working (as if 15 minutes had passed). */
     expireAccessTokens: () => accessTokens.clear(),
     /** Every refresh token stops working (as if the session had ended on the server). */

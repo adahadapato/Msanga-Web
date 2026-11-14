@@ -2,7 +2,25 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: M3a-2 "Were you a student here?" (14 Nov 2026)_
+_Last updated: M3b-2 your set (14 Nov 2026)_
+
+## M3b-2: your set (14 Nov 2026)
+
+Against the API's `PUT /api/communities/{id}/membership/set` and `GET /api/communities/{id}/sets/{year}` (M3b-1).
+Decided 14 Nov 2026: each school names its sets by leaving year (default) or entry year; shown as **"1998 Set"**;
+house, class arm, hostel, department are free text (tidied later with AI).
+
+| File | What it does |
+|---|---|
+| `src/components/schools/SetForm.tsx` | "Your set": the sets your years allow ("1998 Set"…), the suggested one chosen for you (none if you left early), a hint saying how this school names its sets; then the details for the school's level (secondary: house, class arm, hostel; university / polytechnic: department; primary: none), all optional |
+| `src/components/schools/MembershipPanel.tsx` | joining goes straight on to "Your set" ("Now choose your set"); shows "Your set: 1998 Set · Blue House · SS3B" (link to the set) or "You haven't chosen your set yet"; **Choose / Change your set**; new years that no longer fit clear the set ("choose it again"); the heading takes the focus at once (no frame delay) |
+| `src/pages/schools/SchoolPages.tsx` | + **`SetPage`** (`/schools/:schoolId/sets/:year`: "1998 Set at …", "This is your set.", "Who's here" until M3c; only for people who joined the school, otherwise "Go to the school"); My Schools shows "You: 1992–1998 · 1998 Set · details"; the school's Sets box says how its sets are named |
+| `src/api/communities.ts` | `Community.setNaming`; `Membership` + set and details; `MySet`, `SchoolSet`; `membershipApi.chooseSet`, `membershipApi.set` |
+| `src/components/schools/schoolText.ts` | + `detailsText` ("Blue House · SS3B") |
+| `src/App.tsx` | + the set's route |
+| `src/mock/homeData.ts`, `src/api/auth.ts` | "Class of 1998" → "1998 Set" in the made-up Home data |
+| `src/test/fakeApi.ts` | + set naming per school, suggestions / choices like the API, `PUT …/membership/set`, set pages (403 unless joined), years that no longer fit clear the set; `api.schools` |
+| `src/pages/schools/Sets.test.tsx` | choose a set with details (secondary), left early (no guess), by entry year, department (university), years no longer fit, members only |
 
 ## M3a-2: "Were you a student here?" (14 Nov 2026)
 

@@ -168,3 +168,10 @@
 .membership-leave p:focus {
   outline: none;
 }
+
+/* A heading with an icon before it, lined up with the words */
+.heading-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

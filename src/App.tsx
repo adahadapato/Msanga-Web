@@ -15,7 +15,7 @@ import { ComingSoonPage, NotFoundPage, SettingsPage } from './pages/OtherPages'
 import { EditProfilePage, ProfilePage } from './pages/ProfilePage'
 import { AddSchoolPage } from './pages/schools/AddSchoolPage'
 import { FindSchoolPage } from './pages/schools/FindSchoolPage'
-import { MySchoolsPage, SchoolPage } from './pages/schools/SchoolPages'
+import { MySchoolsPage, SchoolPage, SetPage } from './pages/schools/SchoolPages'
 
 /**
  * Every page in one place (React Router).
@@ -49,6 +49,7 @@ export default function App() {
             <Route path="/schools/find" element={<FindSchoolPage />} />
             <Route path="/schools/new" element={<AddSchoolPage />} />
             <Route path="/schools/:schoolId" element={<SchoolPage />} />
+            <Route path="/schools/:schoolId/sets/:year" element={<SetPage />} />
             {COMING_SOON.map(({ path, title, when, back }) => (
               <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} back={back} />} />
             ))}

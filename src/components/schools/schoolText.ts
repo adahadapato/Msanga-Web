@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Community, CommunityLevel, SchoolYears } from '../../api/communities'
+import type { Community, CommunityLevel, Membership, SchoolYears } from '../../api/communities'
 
 /** How each level is shown (decided 13 Nov 2026: "University / Polytechnic" for tertiary). */
 export const LEVEL_LABELS: Record<CommunityLevel, string> = {
@@ -16,6 +16,10 @@ export const MY_SCHOOLS = ['my-schools'] as const
 /** "1992–1998 · Finished here" (one year: "1998 · Left before the end"). */
 export const yearsText = (m: SchoolYears) =>
   `${m.fromYear === m.toYear ? m.fromYear : `${m.fromYear}–${m.toYear}`} · ${m.finished ? 'Finished here' : 'Left before the end'}`
+
+/** "Blue House · SS3B" (the details given, in order; "" if none). */
+export const detailsText = (m: Pick<Membership, 'house' | 'classArm' | 'hostel' | 'department'>) =>
+  [m.house, m.classArm, m.hostel, m.department].filter(Boolean).join(' · ')
 
 const countryNames = new Intl.DisplayNames(['en-GB'], { type: 'region' })
 

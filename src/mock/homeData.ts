@@ -18,7 +18,7 @@ export interface MockSet {
   id: string
   /** The community: a school (later also NYSC, workplaces…). */
   community: string
-  /** The set inside it, e.g. "Class of 1998". */
+  /** The set inside it, e.g. "1998 Set". */
   set: string
   members: number
   /** The set's cover picture. */
@@ -52,12 +52,12 @@ export const scenes = {
 }
 
 export const sets: MockSet[] = [
-  { id: 'gcl-1998', community: 'Government College, Lagos', set: 'Class of 1998', members: 248, picture: picture('set-gcl') },
+  { id: 'gcl-1998', community: 'Government College, Lagos', set: '1998 Set', members: 248, picture: picture('set-gcl') },
   { id: 'uniben-alumni', community: 'University of Benin', set: 'Alumni Network', members: 1542, picture: picture('set-uniben') },
 ]
 
 export const reunions: MockReunion[] = [
-  { id: 'r1', title: 'Class of 1998 Reunion', date: '2027-02-20', place: 'London, UK', isOnline: false, rsvp: 'going', picture: picture('reunion-1998') },
+  { id: 'r1', title: '1998 Set Reunion', date: '2027-02-20', place: 'London, UK', isOnline: false, rsvp: 'going', picture: picture('reunion-1998') },
   { id: 'r2', title: 'University Alumni Meet', date: '2027-05-15', place: 'Birmingham, UK', isOnline: false, rsvp: 'invited', picture: picture('reunion-alumni') },
   { id: 'r3', title: 'Msanga Global Reunion', date: '2027-06-27', place: 'Online', isOnline: true, rsvp: 'open', picture: picture('reunion-global') },
 ]
