@@ -167,6 +167,15 @@ code {
     color: #ffffff;
   }
 
+/* For things that remove something (Leave this school): white on deep red (6.5:1) */
+.button-danger {
+  background: var(--m-problem);
+}
+
+  .button-danger:hover {
+    background: #8a1a12;
+  }
+
 /* Full width, a little taller: the main button of a form */
 .button-wide {
   width: 100%;

@@ -2,7 +2,43 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: M2c Find your school (14 Nov 2026)_
+_Last updated: M3a-2 "Were you a student here?" (14 Nov 2026)_
+
+## M3a-2: "Were you a student here?" (14 Nov 2026)
+
+School first, then the year (see the roadmap). Against the API's `/api/communities/{id}/membership` and
+`/api/me/schools` (M3a-1). Only ever the signed-in member's own membership.
+
+| File | What it does |
+|---|---|
+| `src/components/schools/MembershipPanel.tsx` | on a school's page: "Were you a student here?" → **Yes, I was a student here** → the years form (started, left: this year back to 1940; "Did you finish here?"), checked here with the API's rules; joined: "1992–1998 · Finished here", "Not confirmed yet", **Change years** (the form, filled in), **Leave this school** (asked on the page: Yes, leave / Keep it). Focus: the form's first field when it opens, the box's heading after; what happened is announced (`role="status"`) |
+| `src/components/schools/schoolText.ts` | + `membershipKey`, `MY_SCHOOLS` (query keys), `yearsText` |
+| `src/api/communities.ts` | + `Membership`, `SchoolYears`, `membershipApi` (`mine` gives null when not joined, `join`, `change`, `leave`, `mySchools`), `EARLIEST_YEAR`, `MAX_YEARS_AT_ONE_SCHOOL` |
+| `src/pages/schools/SchoolPages.tsx` | the school's page shows the panel; **My Schools** lists your schools with "You: 1992–1998 · Finished here", most recent first, then Find another school |
+| `src/components/schools/SchoolResult.tsx` | can show extra lines under a school (your years) |
+| `src/components/forms/fields.tsx` | `SelectField` takes a `ref` (to move the focus to it) |
+| `src/auth/useSession.ts` | **signing out forgets everything the page remembered for that member** (their schools, memberships, searches), not just "who is signed in", so the next person on this browser never sees it |
+| `src/styles.css`, `styles/schools.css` | `.button-danger` (white on deep red 6.6:1), the years form (two lists side by side, stacked on phones) |
+| `src/test/fakeApi.ts`, `renderApp.tsx` | + memberships (`api.memberships`) and `/api/me/schools`; `renderApp` also returns the query `client` |
+| `src/pages/schools/Membership.test.tsx` | join (focus, status, saved years), years checked before sending, change (filled in), leave (asked first, Keep it), My Schools (order, a school just joined), forgotten on sign-out |
+
+## M2d: Add your school (14 Nov 2026)
+
+Against the API's `POST /api/communities` (M2b).
+
+| File | What it does |
+|---|---|
+| `src/pages/schools/AddSchoolPage.tsx` | `/schools/new`: name (starts as `?name=`, from a search that found nothing), kind (radio buttons), country (Nigeria first), state (Nigeria: the list; elsewhere optional text), town, other names (commas, up to 5). Checked before sending. "Is it one of these?" (LooksLike: the schools, and "No, it's none of these: add my school" = the same details with `addAnyway`) or "Your school is already on Msanga" (no second copy); its heading takes the focus. Added → the school's page, "Your school is added." |
+| `src/api/communities.ts` | + `NewCommunity`, `communitiesApi.add`, `notAddedBecause` (reads a 409's `code` and `suggestions`) |
+| `src/api/http.ts` | `ApiError.body`: the API's whole answer, for extra fields like `suggestions` |
+| `src/data/places.ts` | `NIGERIAN_STATES` (the same 37 as the API's `NigerianStates.cs`: change both together), `COUNTRIES` (every country, names from the browser, Nigeria first) |
+| `src/components/forms/fields.tsx` | + `SelectField` (a native select) and `RadioGroup` (a fieldset with its question as the legend); same label / hint / error rules as the text fields |
+| `src/components/forms/formHelpers.ts` | the API's `OtherNames[0]` errors land on the `otherNames` field |
+| `src/pages/schools/SchoolPages.tsx` | the school's page says "Your school is added." after adding |
+| `src/pages/comingSoon.ts`, `OtherPages.tsx` | Find Classmates (with sets, M3) now offers "Find your school first"; `back` per entry |
+| `src/styles/schools.css`, `auth.css` | "Is it one of these?" box; select and radio buttons (each choice 44px tall) |
+| `src/test/fakeApi.ts` | + adding a school (AlreadyListed, LooksLike, Nigeria needs a state); schools are per test |
+| `src/pages/schools/AddSchoolPage.test.tsx` | adds and opens it; what's needed; "Is it one of these?" then add anyway; already listed; Nigeria's states / free text elsewhere; the name from a search; Find Classmates → Find your school |
 
 ## M2c: Find your school (14 Nov 2026)
 
@@ -163,6 +199,4 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 ## Coming next
 
 - **M8 (privacy):** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account (and the API).
-- **M2d:** Add your school (`/schools/new`, now "coming soon"): the form, "Did you mean…?" (409 with
-  `suggestions`), Nigeria's states list.
 - **M3:** sets: the made-up sets, reunions and memories are replaced by the API's; Find Classmates.

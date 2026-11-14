@@ -1,11 +1,13 @@
 import { GraduationCap } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import type { Community } from '../../api/communities'
 import { levelAndPlace } from './schoolText'
 
-/** One school in a list of results: its name (the link), level and place, "New", and its other names. The school
- *  goes along with the link, so its page shows at once without asking the API again. */
-export function SchoolResult({ school }: { school: Community }) {
+/** One school in a list of results: its name (the link), level and place, "New", and its other names, then anything
+ *  extra (My Schools adds your years). The school goes along with the link, so its page shows at once without asking
+ *  the API again. */
+export function SchoolResult({ school, children }: { school: Community; children?: ReactNode }) {
   return (
     <li className="school-result">
       <GraduationCap size={28} aria-hidden="true" className="school-result-icon" />
@@ -18,6 +20,7 @@ export function SchoolResult({ school }: { school: Community }) {
         {school.otherNames.length > 0 && (
           <p className="muted">Also known as {school.otherNames.join(', ')}</p>
         )}
+        {children}
       </div>
     </li>
   )

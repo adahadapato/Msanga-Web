@@ -11,7 +11,8 @@ export { where } from './where'
 /**
  * Renders the whole app at `path` (a pretend address bar), talking to the pretend API (test/fakeApi.ts).
  * `signedIn: true` starts as a returning visitor (Ada's refresh token already in this browser's storage).
- * Returns a user-event "user" that clicks like a person, and the pretend API.
+ * Returns a user-event "user" that clicks like a person, the pretend API, and the app's query client (what the
+ * page remembers).
  */
 export function renderApp(path = '/', { signedIn = false } = {}) {
   const api = installFakeApi()
@@ -27,5 +28,5 @@ export function renderApp(path = '/', { signedIn = false } = {}) {
       </MemoryRouter>
     </QueryClientProvider>,
   )
-  return { user, api }
+  return { user, api, client }
 }

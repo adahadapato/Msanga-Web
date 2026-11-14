@@ -13,6 +13,7 @@ import { COMING_SOON } from './pages/comingSoon'
 import { HomePage } from './pages/HomePage'
 import { ComingSoonPage, NotFoundPage, SettingsPage } from './pages/OtherPages'
 import { EditProfilePage, ProfilePage } from './pages/ProfilePage'
+import { AddSchoolPage } from './pages/schools/AddSchoolPage'
 import { FindSchoolPage } from './pages/schools/FindSchoolPage'
 import { MySchoolsPage, SchoolPage } from './pages/schools/SchoolPages'
 
@@ -20,8 +21,8 @@ import { MySchoolsPage, SchoolPage } from './pages/schools/SchoolPages'
  * Every page in one place (React Router).
  * - Signed out, in the account frame: Sign in, Create account, Check your email (the 6-digit code), Forgot your
  *   password and Choose a new password (with a code).
- * - Signed in: the app frame with Home, your profile (and Edit profile), Settings, My Schools, Find your school and
- *   a school's page, and a "coming soon" page for every menu place not built yet.
+ * - Signed in: the app frame with Home, your profile (and Edit profile), Settings, My Schools, Find your school, Add
+ *   your school and a school's page, and a "coming soon" page for every menu place not built yet.
  * Signed out and asking for a signed-in page: Sign in, then back to that page.
  */
 export default function App() {
@@ -46,9 +47,10 @@ export default function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/schools" element={<MySchoolsPage />} />
             <Route path="/schools/find" element={<FindSchoolPage />} />
+            <Route path="/schools/new" element={<AddSchoolPage />} />
             <Route path="/schools/:schoolId" element={<SchoolPage />} />
-            {COMING_SOON.map(({ path, title, when }) => (
-              <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} />} />
+            {COMING_SOON.map(({ path, title, when, back }) => (
+              <Route key={path} path={path} element={<ComingSoonPage title={title} when={when} back={back} />} />
             ))}
           </Route>
         </Route>

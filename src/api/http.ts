@@ -12,6 +12,8 @@ interface ProblemDetails {
   code?: string
   /** Validation: { "Email": ["Enter your email address."] } */
   errors?: Record<string, string[]>
+  /** Anything else the API added, e.g. "suggestions" with "Did you mean…?". */
+  [extra: string]: unknown
 }
 
 /** A failed call: the HTTP status (0 = couldn't reach the API), the API's code, and a message ready to show. */
@@ -20,12 +22,16 @@ export class ApiError extends Error {
   readonly code: string
   /** Per field, keyed like the web app's field ids ("email", "password"). */
   readonly fieldErrors: Record<string, string[]>
+  /** The API's whole answer, for the extra fields some errors carry (e.g. `suggestions`). */
+  readonly body: Record<string, unknown>
 
-  constructor(status: number, code: string, message: string, fieldErrors: Record<string, string[]> = {}) {
+  constructor(status: number, code: string, message: string, fieldErrors: Record<string, string[]> = {},
+              body: Record<string, unknown> = {}) {
     super(message)
     this.status = status
     this.code = code
     this.fieldErrors = fieldErrors
+    this.body = body
   }
 }
 
@@ -71,6 +77,7 @@ export async function apiFetch<T>(path: string, options: ApiOptions = {}): Promi
       problem.code ?? `Http.${response.status}`,
       problem.detail ?? problem.title ?? `Msanga answered with an error (${response.status}). Please try again.`,
       fieldKeys(problem.errors),
+      problem,
     )
   }
   return data as T

@@ -24,7 +24,9 @@ export const looksLikeEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.te
  */
 export function problemsFromApi(error: unknown): { problems: FieldProblem[]; message?: string } {
   if (error instanceof ApiError) {
-    const problems = Object.entries(error.fieldErrors).map(([field, messages]) => ({ field, message: messages[0] }))
+    const problems = Object.entries(error.fieldErrors)
+      .map(([field, messages]) => ({ field: field.replace(/\[\d+\]$/, ''), message: messages[0] }))   // "otherNames[0]" → "otherNames"
+      .filter((p, i, all) => all.findIndex((q) => q.field === p.field) === i)
     return problems.length ? { problems } : { problems: [], message: error.message }
   }
   return { problems: [], message: 'Something went wrong. Please try again.' }

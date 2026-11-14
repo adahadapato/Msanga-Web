@@ -35,7 +35,7 @@ describe('Find your school (against the pretend API)', () => {
   it('says when nothing matches, and offers to add the school', async () => {
     const { user } = renderApp('/schools/find?q=nowhere', { signedIn: true })
     expect((await screen.findByText('No schools match “nowhere”.')).getAttribute('role')).toBe('status')
-    expect(screen.getByRole('link', { name: 'Add your school' }).getAttribute('href')).toBe('/schools/new')
+    expect(screen.getByRole('link', { name: 'Add your school' }).getAttribute('href')).toBe('/schools/new?name=nowhere')
     await user.click(screen.getByRole('link', { name: 'Add your school' }))
     expect(await screen.findByRole('heading', { level: 1, name: 'Add your school' })).toBeTruthy()
   })

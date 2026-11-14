@@ -1,4 +1,7 @@
-import { useEffect, useId, useRef, useState, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import {
+  useEffect, useId, useRef, useState, type InputHTMLAttributes, type Ref, type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from 'react'
 import type { FieldProblem } from './formHelpers'
 
 /**
@@ -110,6 +113,69 @@ export function TextArea({ id, label, hint, error, optional, ...area }: TextArea
         {...area}
       />
     </div>
+  )
+}
+
+type SelectFieldProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'> & {
+  id: string
+  label: string
+  hint?: string
+  error?: string
+  /** The choices: value and what's shown. */
+  options: { value: string; label: string }[]
+  /** A first choice with no value ("Choose a state"), so nothing is chosen for the person. */
+  placeholder?: string
+  /** To move the focus to it (React 19: a plain prop). */
+  ref?: Ref<HTMLSelectElement>
+}
+
+/** A select box (a native one: works with every screen reader, keyboard and phone). */
+export function SelectField({ id, label, hint, error, options, placeholder, ...select }: SelectFieldProps) {
+  return (
+    <div className={`field${error ? ' field-has-error' : ''}`}>
+      <Label htmlFor={id} label={label} />
+      {hint && <p id={`${id}-hint`} className="field-hint">{hint}</p>}
+      {error && <p id={`${id}-error`} className="field-error"><span className="visually-hidden">Error: </span>{error}</p>}
+      <select
+        id={id}
+        name={id}
+        className="field-input field-select"
+        required
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(hint && `${id}-hint`, error && `${id}-error`)}
+        {...select}
+      >
+        {placeholder !== undefined && <option value="">{placeholder}</option>}
+        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </div>
+  )
+}
+
+/**
+ * One choice from a few, as radio buttons in a fieldset whose legend is the question. The error links to the first
+ * button (id `${name}`), so the ErrorSummary's link lands on it.
+ */
+export function RadioGroup({ name, legend, options, error, defaultValue }: {
+  name: string
+  legend: string
+  options: { value: string; label: string }[]
+  error?: string
+  defaultValue?: string
+}) {
+  return (
+    <fieldset className={`field field-radios${error ? ' field-has-error' : ''}`}
+              aria-describedby={error ? `${name}-error` : undefined}>
+      <legend className="field-label">{legend}</legend>
+      {error && <p id={`${name}-error`} className="field-error"><span className="visually-hidden">Error: </span>{error}</p>}
+      {options.map((o, i) => (
+        <label key={o.value} className="radio">
+          <input type="radio" name={name} id={i === 0 ? name : `${name}-${o.value}`} value={o.value}
+                 defaultChecked={defaultValue === o.value} />
+          {o.label}
+        </label>
+      ))}
+    </fieldset>
   )
 }
 

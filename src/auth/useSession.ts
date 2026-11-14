@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useContext, useEffect } from 'react'
 import type { Member } from '../api/auth'
 import { MemberContext } from './memberContext'
@@ -22,6 +22,15 @@ export function useMember(): Member {
   return member
 }
 
+/**
+ * Signed out: "who is signed in" becomes null and everything else the app remembered for that member (their schools,
+ * memberships, searches) is forgotten, so the next person on this browser never sees it.
+ */
+function forgetMember(client: QueryClient) {
+  client.removeQueries({ predicate: (query) => !(query.queryKey.length === 1 && query.queryKey[0] === ME[0]) })
+  client.setQueryData(ME, null)
+}
+
 export function useSignIn() {
   const client = useQueryClient()
   return useMutation({
@@ -34,12 +43,12 @@ export function useSignOut() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: signOut,
-    onSuccess: () => client.setQueryData(ME, null),
+    onSuccess: () => forgetMember(client),
   })
 }
 
 /** When the session ends by itself (refresh token no longer works), the app shows Sign in. Used once, in App. */
 export function useSessionEndedHandler() {
   const client = useQueryClient()
-  useEffect(() => onSignedOut(() => client.setQueryData(ME, null)), [client])
+  useEffect(() => onSignedOut(() => forgetMember(client)), [client])
 }

@@ -279,3 +279,42 @@
     padding: 2rem 1.25rem 3rem;
   }
 }
+
+/* A select box looks like the text fields, with room for its arrow */
+.field-select {
+  padding-right: 2.5rem;
+}
+
+/* Radio buttons: a fieldset without the browser's box; each choice is a 44px-tall row, label included */
+.field-radios {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+  .field-radios legend {
+    padding: 0;
+    margin-bottom: 0.3rem;
+  }
+
+  /* The error's red bar again (the border: 0 above removed it) */
+  .field-radios.field-has-error {
+    padding-left: 0.9rem;
+    border-left: 4px solid var(--m-problem);
+  }
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+  .radio input {
+    width: 1.35rem;
+    height: 1.35rem;
+    margin: 0;
+    accent-color: var(--m-purple-dark);
+  }

@@ -77,7 +77,8 @@ export function FindSchoolPage() {
       <section className="panel school-add" aria-labelledby="add-school-title">
         <h2 id="add-school-title">Can't find your school?</h2>
         <p>Try its nickname or town. If it isn't on Msanga yet, you can add it.</p>
-        <Link to="/schools/new" className="button button-soft">
+        <Link to={typed.trim() ? `/schools/new?name=${encodeURIComponent(typed.trim())}` : '/schools/new'}
+              className="button button-soft">
           <Plus size={18} aria-hidden="true" /> Add your school
         </Link>
       </section>

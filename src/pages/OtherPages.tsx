@@ -8,7 +8,7 @@ import { usePageTitle } from '../components/layout/page'
 export function ComingSoonPage({ title, when, back = { to: '/', label: 'Back to Home' } }: {
   title: string
   when: string
-  back?: { to: string; label: string }
+  back?: { to: string; label: string } | undefined
 }) {
   usePageTitle(title)
   return (

@@ -126,3 +126,45 @@
   .school-head h1:focus {
     outline: none;
   }
+
+/* Add your school: "Is it one of these?" sits above the form, with a violet bar down the left */
+.did-you-mean {
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--m-purple);
+  border-radius: 0.5rem;
+  background: #f6efff;
+}
+
+  .did-you-mean h2 {
+    margin: 0 0 0.25rem;
+  }
+
+  .did-you-mean h2:focus {
+    outline: none;
+  }
+
+  .did-you-mean .school-results {
+    margin-bottom: 1rem;
+  }
+
+/* "Were you a student here?" on a school's page */
+.membership h2:focus {
+  outline: none;
+}
+
+.membership-years {
+  margin: 0.25rem 0 0.5rem;
+  font-weight: 700;
+}
+
+/* The two year lists side by side, stacked on narrow screens */
+.membership-years-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.membership-leave p:focus {
+  outline: none;
+}
