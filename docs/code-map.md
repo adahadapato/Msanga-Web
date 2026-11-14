@@ -2,7 +2,26 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: W5 your profile and the account menu (13 Nov 2026): M1 done on the web side_
+_Last updated: M2c Find your school (14 Nov 2026)_
+
+## M2c: Find your school (14 Nov 2026)
+
+Against the API's `GET /api/communities?search=` and `GET /api/communities/{id}` (M2a). Members only.
+
+| File | What it does |
+|---|---|
+| `src/api/communities.ts` | the `Community` type (as the API sends it) and `communitiesApi.search` / `get`; `SEARCH_MIN_LENGTH` (2) |
+| `src/components/schools/schoolText.ts` | `LEVEL_LABELS` ("University / Polytechnic"), `placeOf` (the country only outside Nigeria; "Enugu", not "Enugu, Enugu"), `useDebouncedValue` (waits 0.3 s after typing stops) |
+| `src/components/schools/SchoolResult.tsx` | one result: the name as the link (the school goes along with it), level and place, "New" (explained to screen readers), "Also known as…"; `NewLabel` |
+| `src/pages/schools/FindSchoolPage.tsx` | `/schools/find`: the search box (its own named search landmark), results as you type, "3 schools found." announced politely (`role="status"`), the search kept in the address (`?q=`), Try again on a failure, "Can't find your school?" → `/schools/new` |
+| `src/pages/schools/SchoolPages.tsx` | `/schools/:schoolId` (name, level, place, other names; "Sets" come in M3; School not found), `/schools` My Schools (starts you off with Find your school) |
+| `src/styles/schools.css` | the search box with its magnifier, results, the "New" label (8:1) |
+| `src/test/fakeApi.ts` | + six schools (`SCHOOLS`) and a rough search; `calls` now include `?search=…` |
+| `src/test/where.ts`, `TrackLocation.tsx` | + `where.search` (the `?q=…` part) |
+| `src/pages/schools/FindSchoolPage.test.tsx` | typing searches once after the pause; one letter asks nothing; nothing found; New; the country; a state named like its town; a school's page (focus on its name, title, Back), not found; My Schools |
+
+Data-light: nothing is asked for under 2 letters or while you're still typing; the same search within 5 minutes
+isn't asked again; a school opened from the results shows at once (the result goes along with the link).
 
 ## W5: your profile and the account menu (13 Nov 2026)
 
@@ -144,4 +163,6 @@ from 80rem; below it, one column. No sideways scrolling at 320px (400% zoom).
 ## Coming next
 
 - **M8 (privacy):** Msanga is 18+ (roadmap): add an "I'm 18 or over" confirmation to Create account (and the API).
-- **M2–M3:** communities (schools) and sets: the made-up sets, reunions and memories are replaced by the API's.
+- **M2d:** Add your school (`/schools/new`, now "coming soon"): the form, "Did you mean…?" (409 with
+  `suggestions`), Nigeria's states list.
+- **M3:** sets: the made-up sets, reunions and memories are replaced by the API's; Find Classmates.

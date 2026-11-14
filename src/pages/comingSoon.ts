@@ -1,6 +1,6 @@
 /** The menu's places that come later, each saying when, so no link leads nowhere (signed-in pages). */
 export const COMING_SOON: { path: string; title: string; when: string }[] = [
-  { path: '/schools', title: 'My Schools', when: 'with communities and sets (M2–M3)' },
+  { path: '/schools/new', title: 'Add your school', when: 'next: it is the very next piece being built' },
   { path: '/sets', title: 'My Sets', when: 'with communities and sets (M2–M3)' },
   { path: '/sets/:setId', title: 'School set', when: 'with communities and sets (M2–M3)' },
   { path: '/find', title: 'Find Classmates', when: 'with communities and sets (M2–M3)' },

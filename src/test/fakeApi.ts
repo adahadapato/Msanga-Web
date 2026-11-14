@@ -1,5 +1,6 @@
 import { vi } from 'vitest'
 import type { AuthTokens, Member } from '../api/auth'
+import type { Community } from '../api/communities'
 
 /** The one account the pretend API knows from the start (like Ada, made in Swagger). Reset for every test. */
 export const ADA = { email: 'ada@example.com', password: 'my old school bell' }
@@ -17,10 +18,31 @@ const ada: Member = {
   photo: null,
 }
 
+/** The schools the pretend API knows (like the API's development seed, plus one added by a member). */
+export const SCHOOLS: Community[] = [
+  { id: 'fgcie', name: 'Federal Government College, Ikot Ekpene', kind: 'School', level: 'Secondary', town: 'Ikot Ekpene', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['FGCIE'] },
+  { id: 'gcu', name: 'Government College, Umuahia', kind: 'School', level: 'Secondary', town: 'Umuahia', state: 'Abia', countryCode: 'NG', isNew: false, otherNames: ['GCU'] },
+  { id: 'uniuyo', name: 'University of Uyo', kind: 'School', level: 'Tertiary', town: 'Uyo', state: 'Akwa Ibom', countryCode: 'NG', isNew: false, otherNames: ['UniUyo'] },
+  { id: 'kcl', name: "King's College", kind: 'School', level: 'Secondary', town: 'Lagos', state: 'Lagos', countryCode: 'NG', isNew: false, otherNames: ['KC'] },
+  { id: 'hcc', name: 'Holy Child College', kind: 'School', level: 'Secondary', town: 'Ikoyi', state: 'Lagos', countryCode: 'NG', isNew: true, otherNames: [] },
+  { id: 'croydon', name: 'Croydon High School', kind: 'School', level: 'Secondary', town: 'Croydon', state: 'Greater London', countryCode: 'GB', isNew: false, otherNames: [] },
+]
+
+/** A rough stand-in for the API's search (which has its own tests there): every word must be in the name, town or
+ *  another name. "fgc" stands for "federal government college", as in the API. */
+function searchSchools(text: string) {
+  const words = text.toLowerCase().replace(/\bfgc\b/g, 'federal government college').split(/[^a-z0-9]+/).filter(Boolean)
+  if (words.join(' ').length < 2) return []
+  return SCHOOLS.filter((s) => {
+    const haystack = [s.name, s.town, ...s.otherNames].join(' ').toLowerCase()
+    return words.every((w) => haystack.includes(w))
+  })
+}
+
 /**
  * A pretend msanga-api for the tests (replaces the browser's fetch): create account with a 6-digit code (one
  * InvalidCode answer for everything wrong, 5 tries per code), sign in, refresh (rotating: a refresh token works once,
- * like the real API), sign out, /api/me (read and edit) and /api/hello. `calls` records every request; `sentCodes` the "emails".
+ * like the real API), sign out, /api/me (read and edit), /api/communities (search, one school) and /api/hello. `calls` records every request; `sentCodes` the "emails".
  */
 export function installFakeApi() {
   ADA.password = ADA_PASSWORD
@@ -66,10 +88,20 @@ export function installFakeApi() {
 
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
     const method = init?.method ?? 'GET'
-    const path = new URL(url).pathname
+    const address = new URL(url)
+    const path = address.pathname
     const body = init?.body ? JSON.parse(String(init.body)) : undefined
     const bearer = (init?.headers as Record<string, string> | undefined)?.Authorization?.replace('Bearer ', '')
-    calls.push(`${method} ${path}`)
+    calls.push(`${method} ${path}${address.search}`)
+
+    // Schools (members only)
+    if (method === 'GET' && path.startsWith('/api/communities')) {
+      if (!bearer || !accessTokens.has(bearer)) return problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
+      const id = path.split('/')[3]
+      if (!id) return Response.json(searchSchools(address.searchParams.get('search') ?? ''))
+      const school = SCHOOLS.find((s) => s.id === id)
+      return school ? Response.json(school) : problem(404, 'Community.NotFound', "We couldn't find that school.")
+    }
 
     switch (`${method} ${path}`) {
       case 'POST /api/auth/register': {

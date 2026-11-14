@@ -9,6 +9,7 @@ import './styles/layout.css'
 import './styles/home.css'
 import './styles/pages.css'
 import './styles/auth.css'
+import './styles/schools.css'
 
 /** Holds the app's data from the API (W2: who is signed in). No refetching on window focus: the session is kept
  *  fresh by auth/session.ts. */
