@@ -112,9 +112,39 @@ export interface Membership extends SchoolYears {
   classArm: string | null
   hostel: string | null
   department: string | null
+  /** Who said "I know them", oldest first ("Nse U."): "Confirmed by…". Empty if an admin confirmed me, or nobody yet.
+   *  Only GET …/membership fills it (the other answers send it empty). */
+  vouchedBy: string[]
+  /** True if I may vouch here (confirmed, or the school's early days): show "People waiting". Only from GET. */
+  canVouch: boolean
 }
 
-/** A set's page (SetDto). Who's in it comes once members can confirm each other (M3c). */
+/** A person at a school, as schoolmates see them (PersonDto): enough to recognise a classmate, nothing more. */
+export interface Person {
+  memberId: string
+  /** Their name now, "Nse Udo". */
+  name: string
+  /** Their surname at school if different; null if not given. */
+  schoolSurname: string | null
+  fromYear: number
+  toYear: number
+  /** "1999 Set"; null if not chosen. */
+  setName: string | null
+  house: string | null
+  classArm: string | null
+  department: string | null
+  /** True if I've already said "I know them". */
+  youVouched: boolean
+}
+
+/** After "I know them" (VouchOutcomeDto). */
+export interface VouchOutcome {
+  person: Person
+  /** True if my vouch confirmed them. */
+  nowConfirmed: boolean
+}
+
+/** A set's page (SetDto). */
 export interface SchoolSet {
   school: Community
   year: number
@@ -122,6 +152,10 @@ export interface SchoolSet {
   name: string
   /** True if it's my set. */
   isMine: boolean
+  /** True if I'm confirmed at the school: only confirmed members see who's in a set. */
+  canSeeMembers: boolean
+  /** The set's confirmed members, by name (empty unless canSeeMembers). */
+  members: Person[]
 }
 
 /** The earliest year on the forms (the API's rule too). */
@@ -158,6 +192,16 @@ export const membershipApi = {
   /** A set's page (403 Community.MembersOnly if I haven't joined the school). */
   set: (communityId: string, year: number, signal?: AbortSignal) =>
     authorizedFetch<SchoolSet>(`api/communities/${encodeURIComponent(communityId)}/sets/${year}`, { signal }),
+
+  /** People waiting to be confirmed (403 unless I may vouch). */
+  waiting: (communityId: string, signal?: AbortSignal) =>
+    authorizedFetch<Person[]>(`api/communities/${encodeURIComponent(communityId)}/waiting`, { signal }),
+
+  /** "I know them": the second vouch confirms them. 409 if already vouched or already confirmed. */
+  vouch: (communityId: string, memberId: string) =>
+    authorizedFetch<VouchOutcome>(
+      `api/communities/${encodeURIComponent(communityId)}/members/${encodeURIComponent(memberId)}/vouch`,
+      { method: 'POST' }),
 
   /** Leave the school (my membership is deleted). */
   leave: (communityId: string) => authorizedFetch<void>(membershipPath(communityId), { method: 'DELETE' }),

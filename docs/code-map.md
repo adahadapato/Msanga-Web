@@ -2,7 +2,24 @@
 
 Where everything lives, and why. Kept up to date with every milestone.
 
-_Last updated: M3b-2 your set (14 Nov 2026)_
+_Last updated: M3c-2 vouching (14 Nov 2026)_
+
+## M3c-2: vouching (14 Nov 2026)
+
+Against the API's `GET …/waiting`, `POST …/members/{memberId}/vouch`, `vouchedBy` / `canVouch` on `GET …/membership`
+and who's here on `GET …/sets/{year}` (M3c-1). Decided 14 Nov 2026: 2 vouches confirm; early days (under 3
+confirmed) let joined members vouch; who vouched is shown; waiting people show name, set, years, house / department.
+
+| File | What it does |
+|---|---|
+| `src/components/schools/WaitingPanel.tsx` | "People waiting to be confirmed" on a school's page, for those who may vouch: each person (name, at-school surname, set, years, house…) with **I know them** (read out as "I know them: Nse Udo", WCAG 2.5.3); then "You know them" or, at the second vouch, off the list; "Thank you…" announced; the early-days note |
+| `src/components/schools/MembershipPanel.tsx` | "Confirmed by Nse U. and Utibe E." (green) / "Confirmed by Msanga." / "Nse U. knows you. One more classmate to go." / how to get confirmed; after saving, asks the API again for who vouched and `canVouch` (only GET sends them) |
+| `src/components/schools/schoolText.ts` | + `confirmationText`, `namesText`, `personText`, `waitingKey`; no double dot after "Utibe E." |
+| `src/pages/schools/SchoolPages.tsx` | the school's page shows the waiting list; a set's page lists **who's here** (confirmed members, for confirmed members) or says why not |
+| `src/api/communities.ts` | + `Person`, `VouchOutcome`; `Membership.vouchedBy` / `canVouch`; `SchoolSet.canSeeMembers` / `members`; `membershipApi.waiting`, `vouch` |
+| `src/styles/schools.css` | people lists; "You know them" / "Confirmed by" in dark green (6.5:1) |
+| `src/test/fakeApi.ts` | + Nse and Utibe at FGCIE (`api.others`), who vouched for Ada (`api.adaVouchedBy`), the waiting list, vouching (early days, 2 confirm, 409s), who's here |
+| `src/pages/schools/Vouching.test.tsx` | early days, the second vouch confirms, hidden after the early days, "knows you", "Confirmed by", "Msanga", who's here / nobody before you're confirmed |
 
 ## M3b-2: your set (14 Nov 2026)
 

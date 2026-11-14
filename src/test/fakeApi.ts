@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import type { AuthTokens, Member } from '../api/auth'
-import type { Community, Membership, MySet, SchoolYears } from '../api/communities'
+import type { Community, Membership, MySet, Person, SchoolYears } from '../api/communities'
 
 /** The one account the pretend API knows from the start (like Ada, made in Swagger). Reset for every test. */
 export const ADA = { email: 'ada@example.com', password: 'my old school bell' }
@@ -78,8 +78,61 @@ export function installFakeApi() {
   const schools: Community[] = [...SCHOOLS]
   /** Ada's schools: school id → her years (only ever her own, like the API). */
   const memberships = new Map<string, SchoolYears & { status: Membership['status'] } & Partial<Record<keyof MySet, number | string | null>>>()
-  /** Like the API's MembershipDto: the suggested set and the allowed sets come from the years and the school's naming. */
-  const membershipOf = (school: Community): Membership => {
+  /** Who vouched for Ada, per school ("Nse U."). */
+  const adaVouchedBy = new Map<string, string[]>()
+  /** Other people at the schools (like the API's development seed: Nse and Utibe joined at FGC Ikot Ekpene). */
+  const others: (Omit<Person, 'youVouched'> & { schoolId: string; status: Membership['status']; setYear: number | null;
+                                                 vouchedBy: string[] })[] = [
+    { memberId: 'nse', name: 'Nse Udo', schoolSurname: null, schoolId: 'fgcie', fromYear: 1993, toYear: 1999,
+      setYear: 1999, setName: '1999 Set', house: 'Red House', classArm: null, department: null, status: 'Joined', vouchedBy: [] },
+    { memberId: 'utibe', name: 'Utibe Essien', schoolSurname: 'Bassey', schoolId: 'fgcie', fromYear: 1992, toYear: 1998,
+      setYear: 1998, setName: '1998 Set', house: 'Blue House', classArm: 'SS3A', department: null, status: 'Joined', vouchedBy: [] },
+  ]
+  const confirmedAt = (schoolId: string) =>
+    others.filter((o) => o.schoolId === schoolId && o.status === 'Confirmed').length +
+    (memberships.get(schoolId)?.status === 'Confirmed' ? 1 : 0)
+  const adaMayVouch = (schoolId: string) =>
+    memberships.get(schoolId)?.status === 'Confirmed' || confirmedAt(schoolId) < 3
+  const personOf = (o: (typeof others)[number]): Person => ({
+    memberId: o.memberId, name: o.name, schoolSurname: o.schoolSurname, fromYear: o.fromYear, toYear: o.toYear,
+    setName: o.setName, house: o.house, classArm: o.classArm, department: o.department,
+    youVouched: o.vouchedBy.includes('Ada O.'),
+  })
+
+  /** GET …/waiting and POST …/members/{id}/vouch, like the API (rules: Domain/Rules/Vouching.cs there). */
+  function vouching(method: string, school: Community, memberId: string | undefined) {
+    if (!memberships.has(school.id)) return problem(403, 'Community.MembersOnly', 'Only people who were students here can see this. Join the school first.')
+    if (method === 'GET') {
+      if (!adaMayVouch(school.id)) return problem(403, 'Community.NotConfirmedYet', "You can vouch for others once classmates have confirmed you.")
+      return Response.json(others.filter((o) => o.schoolId === school.id && o.status === 'Joined').map(personOf))
+    }
+    const them = others.find((o) => o.schoolId === school.id && o.memberId === memberId)
+    if (!them) return problem(404, 'Community.PersonNotFound', "We couldn't find that person at this school.")
+    if (them.status === 'Confirmed') return problem(409, 'Community.AlreadyConfirmed', "They're already confirmed. Thank you!")
+    if (!adaMayVouch(school.id)) return problem(403, 'Community.NotConfirmedYet', "You can vouch for others once classmates have confirmed you.")
+    if (them.vouchedBy.includes('Ada O.')) return problem(409, 'Community.AlreadyVouched', "You've already said you know them.")
+    them.vouchedBy.push('Ada O.')
+    if (them.vouchedBy.length >= 2) them.status = 'Confirmed'
+    return Response.json({ person: personOf(them), nowConfirmed: them.status === 'Confirmed' })
+  }
+
+  /** GET …/sets/{year}: who's here only for confirmed members (Ada included when she's in the set). */
+  function setPage(school: Community, year: number) {
+    if (!memberships.has(school.id)) return problem(403, 'Community.MembersOnly', 'Only people who were students here can see this. Join the school first.')
+    const mine = memberships.get(school.id)!
+    const canSeeMembers = mine.status === 'Confirmed'
+    const members = canSeeMembers
+      ? [...others.filter((o) => o.schoolId === school.id && o.status === 'Confirmed' && o.setYear === year).map(personOf),
+         ...(mine.setYear === year ? [{ memberId: 'ada', name: 'Ada Okon', schoolSurname: null, fromYear: mine.fromYear,
+             toYear: mine.toYear, setName: `${year} Set`, house: null, classArm: null, department: null, youVouched: false }] : [])]
+        .sort((a, b) => a.name.localeCompare(b.name))
+      : []
+    return Response.json({ school, year, name: `${year} Set`, isMine: mine.setYear === year, canSeeMembers, members })
+  }
+
+  /** Like the API's MembershipDto: the suggested set and the allowed sets come from the years and the school's naming.
+   *  Only GET fills who vouched and whether Ada may vouch (`full`). */
+  const membershipOf = (school: Community, full = false): Membership => {
     const m = memberships.get(school.id)!
     const byEntry = school.setNaming === 'ByEntryYear'
     const [first, last] = byEntry ? [m.fromYear - 6, m.toYear] : [m.fromYear, m.toYear + 6]
@@ -91,6 +144,8 @@ export function installFakeApi() {
       suggestedSetYear: byEntry ? m.fromYear : m.finished ? m.toYear : null,
       setYearChoices: Array.from({ length: last - first + 1 }, (_, i) => first + i),
       house: text(m.house), classArm: text(m.classArm), hostel: text(m.hostel), department: text(m.department),
+      vouchedBy: full ? (adaVouchedBy.get(school.id) ?? []) : [],
+      canVouch: full ? adaMayVouch(school.id) : false,
     }
   }
 
@@ -109,7 +164,7 @@ export function installFakeApi() {
 
   function membership(method: string, school: Community, body: SchoolYears) {
     const notAMember = () => problem(404, 'Community.NotAMember', "You haven't joined this school.")
-    if (method === 'GET') return memberships.has(school.id) ? Response.json(membershipOf(school)) : notAMember()
+    if (method === 'GET') return memberships.has(school.id) ? Response.json(membershipOf(school, true)) : notAMember()
     if (method === 'DELETE') {
       return memberships.delete(school.id) ? new Response(null, { status: 204 }) : notAMember()
     }
@@ -179,15 +234,12 @@ export function installFakeApi() {
       if (!bearer || !accessTokens.has(bearer)) return problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
       const [, , , id, part, rest] = path.split('/')
       if (method === 'POST' && !id) return addSchool(body)
-      if (part === 'membership' || part === 'sets') {
+      if (part === 'membership' || part === 'sets' || part === 'waiting' || part === 'members') {
         const school = schools.find((s) => s.id === id)
         if (!school) return problem(404, 'Community.NotFound', "We couldn't find that school.")
         if (part === 'membership') return rest === 'set' ? chooseSet(school, body) : membership(method, school, body)
-        if (!memberships.has(school.id)) {
-          return problem(403, 'Community.MembersOnly', 'Only people who were students here can see this. Join the school first.')
-        }
-        const year = Number(rest)
-        return Response.json({ school, year, name: `${year} Set`, isMine: memberships.get(school.id)!.setYear === year })
+        if (part === 'waiting' || part === 'members') return vouching(method, school, rest)
+        return setPage(school, Number(rest))
       }
       if (!id) return Response.json(searchSchools(schools, address.searchParams.get('search') ?? ''))
       const school = schools.find((s) => s.id === id)
@@ -290,7 +342,7 @@ export function installFakeApi() {
       }
       case 'GET /api/me/schools':
         if (!bearer || !accessTokens.has(bearer)) return problem(401, 'Auth.SessionExpired', 'Your session has expired. Please sign in again.')
-        return Response.json(schools.filter((s) => memberships.has(s.id)).map(membershipOf)
+        return Response.json(schools.filter((s) => memberships.has(s.id)).map((school) => membershipOf(school))
           .sort((a, b) => b.toYear - a.toYear))
       case 'GET /api/hello':
         return Response.json({ title: 'Mme nsanga!', message: 'Your set is waiting.', serverTime: '2026-11-13T22:00:00Z' })
@@ -307,6 +359,10 @@ export function installFakeApi() {
     memberships,
     /** The schools of this test (to change one, e.g. its set naming). */
     schools,
+    /** Other people at the schools (Nse and Utibe at FGCIE): to confirm one, or add a vouch from someone else. */
+    others,
+    /** Who vouched for Ada, per school. */
+    adaVouchedBy,
     /** Every access token stops working (as if 15 minutes had passed). */
     expireAccessTokens: () => accessTokens.clear(),
     /** Every refresh token stops working (as if the session had ended on the server). */

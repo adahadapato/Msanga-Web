@@ -8,7 +8,7 @@ import { ErrorSummary, RadioGroup, SelectField } from '../forms/fields'
 import { formValues, problemFor, type FieldProblem } from '../forms/formHelpers'
 import { useFormProblems } from '../forms/useFormProblems'
 import { Link } from 'react-router'
-import { detailsText, membershipKey, MY_SCHOOLS, yearsText } from './schoolText'
+import { confirmationText, detailsText, membershipKey, MY_SCHOOLS, yearsText } from './schoolText'
 import { SetForm } from './SetForm'
 
 /**
@@ -38,8 +38,11 @@ export function MembershipPanel({ school }: { school: Community }) {
     heading.current?.focus()   // the heading is always there, so the focus can move at once
   }
 
+  /** Shows a saved answer at once (keeping who vouched, which only GET sends), then asks again for the full one. */
   const remember = (m: Membership | null) => {
-    client.setQueryData(key, m)
+    client.setQueryData<Membership | null>(key, (before) =>
+      m && before ? { ...m, vouchedBy: before.vouchedBy, canVouch: before.canVouch } : m)
+    void client.invalidateQueries({ queryKey: key })
     void client.invalidateQueries({ queryKey: MY_SCHOOLS })
   }
 
@@ -123,9 +126,7 @@ export function MembershipPanel({ school }: { school: Community }) {
           ) : (
             <p>You haven't chosen your set yet.</p>
           )}
-          {mine.status === 'Joined' && (
-            <p className="muted">Not confirmed yet. Classmates who knew you will be able to confirm you soon.</p>
-          )}
+          <p className={mine.status === 'Confirmed' ? 'membership-confirmed' : 'muted'}>{confirmationText(mine)}</p>
           <div className="form-buttons">
             <button type="button" className={mine.setName ? 'button button-soft' : 'button'} onClick={() => setMode('set')}>
               {mine.setName ? 'Change your set' : 'Choose your set'}

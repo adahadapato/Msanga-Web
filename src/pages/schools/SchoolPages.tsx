@@ -6,7 +6,8 @@ import { ApiError } from '../../api/http'
 import { usePageTitle } from '../../components/layout/page'
 import { MembershipPanel } from '../../components/schools/MembershipPanel'
 import { NewLabel, SchoolResult } from '../../components/schools/SchoolResult'
-import { detailsText, levelAndPlace, MY_SCHOOLS } from '../../components/schools/schoolText'
+import { detailsText, levelAndPlace, MY_SCHOOLS, personText } from '../../components/schools/schoolText'
+import { WaitingPanel } from '../../components/schools/WaitingPanel'
 
 /**
  * A school's page: its name, level and place, its other names; "Were you a student here?" with your set
@@ -43,13 +44,14 @@ export function SchoolPage() {
         </section>
 
         <MembershipPanel school={s} />
+        <WaitingPanel school={s} />
 
         <section className="panel" aria-labelledby="school-sets-title">
           <h2 id="school-sets-title"><UsersRound size={22} aria-hidden="true" /> Sets</h2>
           <p>
             Each year here is a set, named by the year students{' '}
-            {s.setNaming === 'ByEntryYear' ? 'came in' : 'left'}: the 1998 Set, the 1999 Set… Who's in each set shows
-            once classmates can confirm each other, which comes next.
+            {s.setNaming === 'ByEntryYear' ? 'came in' : 'left'}: the 1998 Set, the 1999 Set… Open your set to see
+            who's there; you see names once classmates have confirmed you.
           </p>
         </section>
 
@@ -161,10 +163,28 @@ export function SetPage() {
         </section>
         <section className="panel" aria-labelledby="set-people-title">
           <h2 id="set-people-title">Who's here</h2>
-          <p>
-            Classmates in the {s.name} will show here once they can confirm each other: that's the next part of
-            Msanga. Until then, nobody's name is shown, not even to people from the school.
-          </p>
+          {!s.canSeeMembers ? (
+            <p>
+              You'll see who's here once classmates have confirmed you. Until then, nobody's name is shown to you,
+              and yours isn't shown to others.
+            </p>
+          ) : s.members.length === 0 ? (
+            <p>Nobody from the {s.name} is confirmed yet. Classmates show here once two people say they know them.</p>
+          ) : (
+            <ul className="people" aria-label={`Confirmed members of the ${s.name}`}>
+              {s.members.map((person) => (
+                <li key={person.memberId} className="person">
+                  <div>
+                    <p className="person-name">
+                      {person.name}
+                      {person.schoolSurname && <span className="muted"> (at school: {person.schoolSurname})</span>}
+                    </p>
+                    <p className="muted">{personText(person)}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     )

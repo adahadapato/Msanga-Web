@@ -175,3 +175,42 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+/* People (waiting to be confirmed, a set's members): name and details, with "I know them" at the end */
+.people {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--m-border);
+}
+
+  .person:first-child {
+    border-top: 0;
+  }
+
+  .person p {
+    margin: 0;
+  }
+
+.person-name {
+  font-weight: 700;
+}
+
+/* "You know them", "Confirmed by": dark green on white (6.5:1) */
+.person-vouched,
+.membership-confirmed {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #1d6b3a;
+  font-weight: 700;
+}
